@@ -2,6 +2,10 @@ import { useWebinarStore } from "@/store/useWebinarStore";
 import React, { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Check from "@/icons/Check";
+import { Separator } from "@/components/ui/separator";
+import { AlertCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 type Step = {
   id: string;
@@ -26,6 +30,34 @@ const MultiStepForm = ({ steps, onComplete }: Props) => {
   const currentStep = steps[currentStepIndex];
   const isFirstStep = currentStepIndex === 0;
   const isLastStep = currentStepIndex === steps.length - 1;
+
+  const handleBack = () => {
+    if (isFirstStep) {
+      setModalOpen(false);
+    } else {
+      setCurrentStepIndex(currentStepIndex - 1);
+      setValidationError(null);
+    }
+  };
+
+  const handleNext = async () => {
+    setValidationError(null)
+    const isValid = validateStep(currentStep.id as keyof typeof formData)
+    if(!isValid){
+      setValidationError('Please fill in all the required fields.')
+      return;
+    }
+    if(!completedSteps.includes(currentStep.id)){
+      setCompletedSteps([...completedSteps, currentStep.id])
+    }
+    if(isLastStep){
+      try{
+        setSubmitting(true)
+      }catch(error){}
+    }else{
+      setCurrentStepIndex(currentStepIndex + 1)
+    }
+  }
 
   return (
     <div className="flex flex-col justify-center items-center bg-[#27272A]/20 border border-border rounded-3xl overflow-hidden max-w-6xl mx-auto backdrop-blur-[160px]">
@@ -118,6 +150,55 @@ const MultiStepForm = ({ steps, onComplete }: Props) => {
             })}
           </div>
         </div>
+        <Separator
+          orientation="vertical"
+          className="hidden md:block w-px h-28 bg-gray-700/50"
+        />
+        <Separator
+          orientation="horizontal"
+          className="md:hidden h-px w-full my-4 bg-gray-700/50"
+        />
+        <div className="w-full md:w-2/3">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentStep.id}
+              initial={{ x: 20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: -20, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="p-6"
+            >
+              <div className="mb-6">
+                <h2 className="text-xl font-semibold">{currentStep.title}</h2>
+                <p className="text-gray-400">{currentStep.description}</p>
+              </div>
+
+              {currentStep.component}
+
+              {validationError && (
+                <div className="mt-4 p-3 bg-red-900/30 border border-red-800 rounded-md flex items-start gap-2">
+                  <AlertCircle className="h-5 w-5 mt-0.5 flex-shrink-0" />
+                  <p>{validationError}</p>
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </div>
+
+      <div className="w-full p-6 flex justify-between">
+        <Button
+          variant="outline"
+          onClick={handleBack}
+          disabled={isSubmitting}
+          className={cn(
+            "border-gray-700 text-white hover:bg-gray-800",
+            isFirstStep && "opacity-50 cursor-not-allowed",
+          )}
+        >
+          {isFirstStep ? "Cancel" : "Back"}
+        </Button>
+        <Button onClick={handlenext} disabled={isSubmitting}></Button>
       </div>
     </div>
   );
