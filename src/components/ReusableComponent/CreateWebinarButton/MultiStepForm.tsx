@@ -3,9 +3,12 @@ import React, { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Check from "@/icons/Check";
 import { Separator } from "@/components/ui/separator";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, ChevronRight, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { createWebinar } from "@/actions/webinar";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 type Step = {
   id: string;
@@ -22,6 +25,7 @@ type Props = {
 const MultiStepForm = ({ steps, onComplete }: Props) => {
   const { formData, validateStep, isSubmitting, setSubmitting, setModalOpen } =
     useWebinarStore();
+  const router = useRouter();
 
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<string[]>([]);
@@ -41,27 +45,44 @@ const MultiStepForm = ({ steps, onComplete }: Props) => {
   };
 
   const handleNext = async () => {
-    setValidationError(null)
-    const isValid = validateStep(currentStep.id as keyof typeof formData)
-    if(!isValid){
-      setValidationError('Please fill in all the required fields.')
+    setValidationError(null);
+    const isValid = validateStep(currentStep.id as keyof typeof formData);
+    if (!isValid) {
+      setValidationError("Please fill in all the required fields.");
       return;
     }
-    if(!completedSteps.includes(currentStep.id)){
-      setCompletedSteps([...completedSteps, currentStep.id])
+    if (!completedSteps.includes(currentStep.id)) {
+      setCompletedSteps([...completedSteps, currentStep.id]);
     }
-    if(isLastStep){
-      try{
-        setSubmitting(true)
-      }catch(error){}
-    }else{
-      setCurrentStepIndex(currentStepIndex + 1)
+    if (isLastStep) {
+      try {
+        setSubmitting(true);
+        const result = await createWebinar(formData);
+        if (result.status === 200 && result.webinarId) {
+          toast.success("Your webinar has been created successfully.");
+          onComplete(result.webinarId);
+        } else {
+          toast.error(
+            result.message || "Your webinar has not been created successfully.",
+          );
+          setValidationError(result.message);
+        }
+        router.refresh();
+      } catch (error) {
+        console.error("Error creating webinar:", error);
+        toast.error("Failed to create webinar. Please try again.");
+        setValidationError("Failed to create webinar. Please try again.");
+      } finally {
+        setSubmitting(false);
+      }
+    } else {
+      setCurrentStepIndex(currentStepIndex + 1);
     }
-  }
+  };
 
   return (
-    <div className="flex flex-col justify-center items-center bg-[#27272A]/20 border border-border rounded-3xl overflow-hidden max-w-6xl mx-auto backdrop-blur-[160px]">
-      <div className="flex items-center justify-start">
+    <div className="flex flex-col justify-center items-center bg-[#27272A]/20 border border-border rounded-2xl overflow-hidden w-full mx-auto backdrop-blur-[160px]">
+      <div className="flex items-center justify-start w-full">
         <div className="w-full md:w-1/3 p-6">
           <div className="space-y-6">
             {steps.map((step, index) => {
@@ -198,7 +219,21 @@ const MultiStepForm = ({ steps, onComplete }: Props) => {
         >
           {isFirstStep ? "Cancel" : "Back"}
         </Button>
-        <Button onClick={handlenext} disabled={isSubmitting}></Button>
+        <Button onClick={handleNext} disabled={isSubmitting}>
+          {isLastStep ? (
+            isSubmitting ? (
+              <>
+                <Loader2 className="animate-spin" />
+                Creating...
+              </>
+            ) : (
+              "Complete"
+            )
+          ) : (
+            "Next"
+          )}
+          {!isLastStep && <ChevronRight className="ml-1 h-4 w-4" />}
+        </Button>
       </div>
     </div>
   );
