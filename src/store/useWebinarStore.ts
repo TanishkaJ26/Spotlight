@@ -1,4 +1,9 @@
-import { validateAdditionalInfo, validateBasicInfo, validateCTA, ValidationErrors } from "@/lib/type";
+import {
+  validateAdditionalInfo,
+  validateBasicInfo,
+  validateCTA,
+  ValidationErrors,
+} from "@/lib/type";
 import { CtaTypeEnum } from "@prisma/client";
 import { create } from "zustand";
 
@@ -65,6 +70,9 @@ type WebinarStore = {
     value: WebinarFormState["additionalInfo"][K],
   ) => void;
 
+  addTag: (tag: string) => void;
+  removeTag: (tag: string) => void;
+
   validateStep: (stepId: keyof WebinarFormState) => boolean;
 
   getStepValidationErrors: (stepId: keyof WebinarFormState) => ValidationErrors;
@@ -123,16 +131,16 @@ export const useWebinarStore = create<WebinarStore>((set, get) => ({
     });
   },
 
-  updateCTAField:(field, value) => {
+  updateCTAField: (field, value) => {
     set((state) => {
-      const newCTA = {...state.formData.cta, [field]: value}
-      const validationResult = validateCTA(newCTA)
+      const newCTA = { ...state.formData.cta, [field]: value };
+      const validationResult = validateCTA(newCTA);
 
-      return{
-        formData: {...state.formData, cta: newCTA},
-        validation: {...state.validation, cta: validationResult}
-      }
-    })
+      return {
+        formData: { ...state.formData, cta: newCTA },
+        validation: { ...state.validation, cta: validationResult },
+      };
+    });
   },
 
   updateAdditionalInfoField: (field, value) => {
@@ -140,48 +148,48 @@ export const useWebinarStore = create<WebinarStore>((set, get) => ({
       const newAdditionalInfo = {
         ...state.formData.additionalInfo,
         [field]: value,
-      }
-      const validationResult = validateAdditionalInfo(newAdditionalInfo)
+      };
+      const validationResult = validateAdditionalInfo(newAdditionalInfo);
 
-      return{
+      return {
         formData: {
           ...state.formData,
           additionalInfo: newAdditionalInfo,
         },
-        validation:{
+        validation: {
           ...state.validation,
           additionalInfo: validationResult,
-        }
-      }
-    })
+        },
+      };
+    });
   },
 
   validateStep: (stepId: keyof WebinarFormState) => {
-    const { formData } = get()
-    let validationResult
+    const { formData } = get();
+    let validationResult;
 
     switch (stepId) {
       case "basicInfo":
-        validationResult = validateBasicInfo(formData.basicInfo)
-        break
+        validationResult = validateBasicInfo(formData.basicInfo);
+        break;
       case "cta":
-        validationResult = validateCTA(formData.cta)
-        break
+        validationResult = validateCTA(formData.cta);
+        break;
       case "additionalInfo":
-        validationResult = validateAdditionalInfo(formData.additionalInfo)
-        break
+        validationResult = validateAdditionalInfo(formData.additionalInfo);
+        break;
     }
     set((state) => {
-      return{
-        validation: {...state.validation, [stepId]: validationResult}
-      }
-    })
+      return {
+        validation: { ...state.validation, [stepId]: validationResult },
+      };
+    });
 
-    return validationResult.valid
+    return validationResult.valid;
   },
 
   getStepValidationErrors: (stepId: keyof WebinarFormState) => {
-    return get().validation[stepId].errors
+    return get().validation[stepId].errors;
   },
 
   resetForm: () => {
@@ -190,7 +198,44 @@ export const useWebinarStore = create<WebinarStore>((set, get) => ({
       validation: initialValidation,
       isComplete: false,
       isSubmitting: false,
-    })
+    });
   },
 
+  addTag: (tag: string) => {
+    set((state) => {
+      const newTags = [...(state.formData.cta.tags || []), tag];
+
+      const newCTA = {
+        ...state.formData.cta,
+        tags: newTags,
+      };
+
+      return {
+        formData: {
+          ...state.formData,
+          cta: newCTA,
+        },
+      };
+    });
+  },
+
+  removeTag: (tagToRemove) => {
+    set((state) => {
+      const newTags = (state.formData.cta.tags || []).filter(
+        (tag) => tag !== tagToRemove,
+      );
+
+      const newCTA = {
+        ...state.formData.cta,
+        tags: newTags,
+      };
+
+      return {
+        formData: {
+          ...state.formData,
+          cta: newCTA,
+        },
+      };
+    });
+  },
 }));

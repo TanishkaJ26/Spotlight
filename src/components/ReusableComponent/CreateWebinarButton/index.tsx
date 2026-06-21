@@ -10,14 +10,16 @@ import { useWebinarStore } from "@/store/useWebinarStore";
 import React, { useState } from "react";
 import MultiStepForm from "./MultiStepForm";
 import BasicInfoStep from "./BasicInfoStep";
+import CTAStep from "./CTAStep";
 
 type Props = {};
 
 const CreateWebinarButton = (props: Props) => {
-  const { isModalOpen, setModalOpen, isComplete, setComplete } = useWebinarStore();
-  
-  const [webinarLink, setWebinarLink] = useState('')
-  
+  const { isModalOpen, setModalOpen, isComplete, setComplete } =
+    useWebinarStore();
+
+  const [webinarLink, setWebinarLink] = useState("");
+
   const steps = [
     {
       id: "basicInfo",
@@ -25,12 +27,23 @@ const CreateWebinarButton = (props: Props) => {
       description: "Please fill out the standard info needed for your webinar",
       component: <BasicInfoStep />,
     },
+    {
+      id: "cta",
+      title: "CTA",
+      description:
+        "Please provide the end-point for your customers through your webinar",
+      component: (
+        <CTAStep assistants={[]} stripeProducts={[]} />
+      ),
+    },
   ];
 
   const handleComplete = (webinarId: string) => {
-    setComplete(true)
-    setWebinarLink( `${process.env.NEXT_PUBLIC_BASE_URL}/live-webinar/${webinarId}`)
-  }
+    setComplete(true);
+    setWebinarLink(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/live-webinar/${webinarId}`,
+    );
+  };
 
   return (
     <Dialog open={isModalOpen} onOpenChange={setModalOpen}>
@@ -51,7 +64,7 @@ const CreateWebinarButton = (props: Props) => {
         ) : (
           <>
             <DialogTitle className="sr-only">Create Webinar</DialogTitle>
-            <MultiStepForm steps={steps} onComplete={handleComplete}/>
+            <MultiStepForm steps={steps} onComplete={handleComplete} />
           </>
         )}
       </DialogContent>
