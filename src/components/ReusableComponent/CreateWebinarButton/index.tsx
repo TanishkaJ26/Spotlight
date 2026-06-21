@@ -11,11 +11,12 @@ import React, { useState } from "react";
 import MultiStepForm from "./MultiStepForm";
 import BasicInfoStep from "./BasicInfoStep";
 import CTAStep from "./CTAStep";
+import AdditionalInfoStep from "./AdditionalInfoStep";
 
 type Props = {};
 
 const CreateWebinarButton = (props: Props) => {
-  const { isModalOpen, setModalOpen, isComplete, setComplete } =
+  const { isModalOpen, setModalOpen, isComplete, setComplete, resetForm } =
     useWebinarStore();
 
   const [webinarLink, setWebinarLink] = useState("");
@@ -32,9 +33,14 @@ const CreateWebinarButton = (props: Props) => {
       title: "CTA",
       description:
         "Please provide the end-point for your customers through your webinar",
-      component: (
-        <CTAStep assistants={[]} stripeProducts={[]} />
-      ),
+      component: <CTAStep assistants={[]} stripeProducts={[]} />,
+    },
+    {
+      id: "additionalInfo",
+      title: "Additional information",
+      description:
+        "Please fill out information about additional options if necessary",
+      component: <AdditionalInfoStep />,
     },
   ];
 
@@ -50,7 +56,10 @@ const CreateWebinarButton = (props: Props) => {
       <DialogTrigger asChild>
         <button
           className="rounded-xl flex gap-2 items-center hover: cursor-pointer px-4 py-2 border border-border bg-primary/10 backdrop-blur-sm text-sm font-normal text-primary hover:bg-primary-20"
-          onClick={() => setModalOpen(true)}
+          onClick={() => {
+            resetForm();
+            setModalOpen(true);
+          }}
         >
           <PlusIcon /> Create Webinar{" "}
         </button>

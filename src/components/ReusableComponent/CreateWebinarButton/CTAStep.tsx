@@ -106,12 +106,12 @@ const CTAStep = (props: Props) => {
           >
             <TabsList className="w-full bg-transparent">
               <TabsTrigger value={CtaTypeEnum.BOOK_A_CALL}
-              className="w-1/2 data-[state=active]:!bg-background/50"
+              className="w-1/2 data-[state=active]:!bg-background/50 data-[state=active]:border data-[state=active]:border-input"
               onClick={() => handleSelectCTAType(CtaTypeEnum.BOOK_A_CALL)}>
                 Book a Call
               </TabsTrigger>
               <TabsTrigger value={CtaTypeEnum.BUY_NOW}
-              className="w-1/2"
+              className="w-1/2 data-[state=active]:!bg-background/50 data-[state=active]:border data-[state=active]:border-input"
               onClick={()=>handleSelectCTAType(CtaTypeEnum.BUY_NOW)}>
                 Buy Now
               </TabsTrigger>
