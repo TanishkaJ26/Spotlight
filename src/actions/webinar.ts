@@ -81,18 +81,39 @@ export const createWebinar = async (formData: WebinarFormState) => {
         presenterId: presenterid,
       },
     });
-    revalidatePath('/')
-    return{
+    revalidatePath("/");
+    return {
       status: 200,
-      message: 'Webinar craeted successfully',
+      message: "Webinar craeted successfully",
       webinarId: webinar.id,
       webinarLInk: `/webinar/${webinar.id}`,
-    }
+    };
   } catch (error) {
-    console.error('Error creating webinar:', error)
-    return{
-      status:500,
-      message: 'Failed to create webinar. Please try again.'
-    }
+    console.error("Error creating webinar:", error);
+    return {
+      status: 500,
+      message: "Failed to create webinar. Please try again.",
+    };
+  }
+};
+
+export const getWebinarByPresenterId = async (presenterId: string) => {
+  try {
+    const webinars = await prismaClient.webinar.findMany({
+      where: { presenterId },
+      include: {
+        presenter: {
+          select: {
+            name: true,
+            stripeConnectId: true,
+            id: true,
+          },
+        },
+      },
+    });
+    return webinars;
+  } catch (error) {
+    console.error("Error getting webinars:", error);
+    return [];
   }
 };
