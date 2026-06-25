@@ -1,11 +1,54 @@
-import React from 'react'
+import getWebinarAttendance from "@/actions/attendance";
+import PageHeader from "@/components/ReusableComponent/PageHeader";
+import HomeIcon from "@/icons/HomeIcon";
+import LeadIcon from "@/icons/LeadIcon";
+import PipelineIcon from "@/icons/PipeLIneIcon";
+import React from "react";
+import PipelineLayout from "./_components/PipelineLayout";
+import { AttendedTypeEnum } from "@prisma/client";
+import { formatColumnTitle } from "./_components/utils";
 
-type Props = {}
+type Props = {
+  params: Promise<{
+    webinarId: string;
+  }>;
+};
 
-const page = (props: Props) => {
+const page = async ({ params }: Props) => {
+  const { webinarId } = await params;
+  const pipelineData = await getWebinarAttendance(webinarId)
+
+  if(!pipelineData.data){
+    return (
+      <div className="text-3xl h-[400px] flex justify-center items-center">
+        No Pipelines Found
+      </div>
+    )
+  }
+  //TODO show real data
   return (
-    <div>page</div>
-  )
-}
+    <div className="w-full flex flex-col gap-8">
+      <PageHeader
+        leftIcon={<LeadIcon className="w-4 h-4" />}
+        mainIcon={<PipelineIcon className="w-12 h-12" />}
+        rightIcon={<HomeIcon className="w-3 h-3" />}
+        heading="Keep track of all of your customers"
+        placeholder="Search Name, Tag or Email"
+      ></PageHeader>
 
-export default page
+      <div className="flex overflow-x-auto pb-4 gap-4 md:gap-6 scrollbar-hide">
+        {Object.entries(pipelineData.data).map(([columnType, columnData]) => (
+          <PipelineLayout
+            key={columnType}
+            title={formatColumnTitle(columnType as AttendedTypeEnum)}
+            count={columnData.count}
+            users={columnData.users}
+            tags={pipelineData.webinarTags}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default page;
