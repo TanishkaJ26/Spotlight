@@ -4,6 +4,7 @@ import { onAuthenticateUser } from "@/actions/auth";
 import { redirect } from "next/navigation";
 import Sidebar from "@/components/ReusableComponent/LayoutComponents/Sidebar";
 import Header from "@/components/ReusableComponent/LayoutComponents/Header";
+import { getAllProductsFromStripe } from "@/actions/stripe";
 
 type Props = {
   children: React.ReactNode;
@@ -16,13 +17,18 @@ const Layout = async ({ children }: Props) => {
     redirect("/sign-in");
   }
 
+  const stripeProducts = await getAllProductsFromStripe();
+
   return (
     <div className="flex w-full min-h-screen">
       {/* SIDEBAR */}
-      <Sidebar/>
+      <Sidebar />
       <div className="flex flex-col w-full h-screen overflow-auto px-4 scrollbar-hide container mx-auto">
         {/* HEADER */}
-        <Header user={userExist.user}/>
+        <Header
+          user={userExist.user}
+          stripeProducts={stripeProducts.products || []}
+        />
         <div className="flex-1 py-10">{children}</div>
       </div>
     </div>

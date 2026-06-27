@@ -34,8 +34,8 @@ export const createWebinar = async (formData: WebinarFormState) => {
 
     // TODO: check if user has a subscription
 
-    const presenterid = user.user.id;
-    console.log("Form Data:", formData, presenterid);
+    const presenterId = user.user.id;
+    console.log("Form Data:", formData, presenterId);
 
     if (!formData.basicInfo.webinarName) {
       return { status: 404, message: "Webinar name is required" };
@@ -78,15 +78,15 @@ export const createWebinar = async (formData: WebinarFormState) => {
           ? formData.additionalInfo.couponCode
           : null,
         couponEnabled: formData.additionalInfo.couponEnabled || false,
-        presenterId: presenterid,
+        presenterId: presenterId,
       },
     });
     revalidatePath("/");
     return {
       status: 200,
-      message: "Webinar craeted successfully",
+      message: "Webinar created successfully",
       webinarId: webinar.id,
-      webinarLInk: `/webinar/${webinar.id}`,
+      webinarLink: `/webinar/${webinar.id}`,
     };
   } catch (error) {
     console.error("Error creating webinar:", error);

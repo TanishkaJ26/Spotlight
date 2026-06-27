@@ -1,15 +1,26 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  SelectContent,
+  SelectTrigger,
+  SelectValue,
+  SelectItem,
+  Select,
+} from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { useWebinarStore } from "@/store/useWebinarStore";
 import { CtaTypeEnum } from "@prisma/client";
-import { X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import React, { useState } from "react";
+import Stripe from "stripe";
 
-type Props = {};
+type Props = {
+  stripeProducts: Stripe.Product[] | [];
+};
 
-const CTAStep = (props: Props) => {
+const CTAStep = ({ stripeProducts }: Props) => {
+   console.log("stripeProducts 2:", stripeProducts);
   const {
     formData,
     updateCTAField,
@@ -18,7 +29,7 @@ const CTAStep = (props: Props) => {
     getStepValidationErrors,
   } = useWebinarStore();
 
-  const [tagInput, setTagInput] =useState('')
+  const [tagInput, setTagInput] = useState("");
 
   const { ctaLabel, tags, aiAgent, priceId, ctaType } = formData.cta;
 
@@ -32,16 +43,20 @@ const CTAStep = (props: Props) => {
   };
 
   const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if(e.key === 'Enter' && tagInput.trim()){
-      e.preventDefault()
-      addTag(tagInput.trim())
-      setTagInput('')
+    if (e.key === "Enter" && tagInput.trim()) {
+      e.preventDefault();
+      addTag(tagInput.trim());
+      setTagInput("");
     }
-  }
+  };
 
   const handleSelectCTAType = (value: string) => {
-    updateCTAField('ctaType', value as CtaTypeEnum)
-  }
+    updateCTAField("ctaType", value as CtaTypeEnum);
+  };
+
+  const handleProductChange = (value: string) => {
+    updateCTAField("priceId", value);
+  };
 
   return (
     <div className="space-y-6">
@@ -98,27 +113,63 @@ const CTAStep = (props: Props) => {
         )}
       </div>
 
-        <div className="space-y-2 w-full">
-          <Label>CTA Type</Label>
-          <Tabs 
-          defaultValue={CtaTypeEnum.BOOK_A_CALL}
-          className="w-full"
-          >
-            <TabsList className="w-full bg-transparent">
-              <TabsTrigger value={CtaTypeEnum.BOOK_A_CALL}
+      <div className="space-y-2 w-full">
+        <Label>CTA Type</Label>
+        <Tabs defaultValue={CtaTypeEnum.BOOK_A_CALL} className="w-full">
+          <TabsList className="w-full bg-transparent">
+            <TabsTrigger
+              value={CtaTypeEnum.BOOK_A_CALL}
               className="w-1/2 data-[state=active]:!bg-background/50 data-[state=active]:border data-[state=active]:border-input"
-              onClick={() => handleSelectCTAType(CtaTypeEnum.BOOK_A_CALL)}>
-                Book a Call
-              </TabsTrigger>
-              <TabsTrigger value={CtaTypeEnum.BUY_NOW}
+              onClick={() => handleSelectCTAType(CtaTypeEnum.BOOK_A_CALL)}
+            >
+              Book a Call
+            </TabsTrigger>
+            <TabsTrigger
+              value={CtaTypeEnum.BUY_NOW}
               className="w-1/2 data-[state=active]:!bg-background/50 data-[state=active]:border data-[state=active]:border-input"
-              onClick={()=>handleSelectCTAType(CtaTypeEnum.BUY_NOW)}>
-                Buy Now
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+              onClick={() => handleSelectCTAType(CtaTypeEnum.BUY_NOW)}
+            >
+              Buy Now
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+      <div className="space-y-2">
+        <Label>Attach a Product</Label>
+        <div className="relative">
+          <div className="mb-2">
+            <div className="relative">
+              <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
+              <Input
+                placeholder="Search agents"
+                className="pl-9 !bg-background/50 border border-input"
+              />
+            </div>
+          </div>
+          <Select value={priceId} onValueChange={handleProductChange}>
+            <SelectTrigger className="w-full !bg-background/50 border border-input">
+              <SelectValue placeholder="Select an product" />
+            </SelectTrigger>
+            <SelectContent className="bg-background border border-input max-h-48">
+              {stripeProducts?.length > 0 ? (
+                stripeProducts.map((product) => (
+                  <SelectItem
+                    key={product.id}
+                    value={product?.default_price?.toString() || ""}
+                    className="!bg-background/50 hover:!bg-white/10"
+                  >
+                    {product.name}
+                  </SelectItem>
+                ))
+              ) : (
+                <SelectItem value="none" disabled>
+                  Create product in stripe
+                </SelectItem>
+              )}
+            </SelectContent>
+          </Select>
         </div>
-      
+      </div>
     </div>
   );
 };

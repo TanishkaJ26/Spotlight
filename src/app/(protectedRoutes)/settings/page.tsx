@@ -94,7 +94,7 @@ const page = async (props: Props) => {
                 <div className="h-4 w-4 rounded-full bg-green-100 flex items-center justify-center">
                   <div className="h-1.5 w-1.5 rounded-full bg-green-500"></div>
                 </div>
-                Process payments securelt from customers worldwide
+                Process payments securely from customers worldwide
               </li>
               <li className="flex items-center gap-2">
                 <div className="h-4 w-4 rounded-full bg-green-100 flex items-center justify-center">
