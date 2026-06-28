@@ -131,4 +131,4 @@ export const potentialCustomer = [
   },
 ];
 
-export const subscriptionPriceId = `price_1TmQx8RVLHRyeiuylSATfOIz`;
+export const subscriptionPriceId = `price_1Tn8uLRVLHRyeiuyQM381ilL`;
