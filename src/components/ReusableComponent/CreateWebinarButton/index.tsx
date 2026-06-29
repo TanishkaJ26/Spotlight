@@ -13,6 +13,7 @@ import BasicInfoStep from "./BasicInfoStep";
 import CTAStep from "./CTAStep";
 import AdditionalInfoStep from "./AdditionalInfoStep";
 import Stripe from "stripe";
+import SuccessStep from "./SuccessStep";
 
 type Props = {
   stripeProducts: Stripe.Product[] | [];
@@ -54,6 +55,10 @@ const CreateWebinarButton = ({ stripeProducts }: Props) => {
     );
   };
 
+  const handleCreateNew = () => {
+    resetForm();
+  };
+
   return (
     <Dialog open={isModalOpen} onOpenChange={setModalOpen}>
       <DialogTrigger asChild>
@@ -71,7 +76,10 @@ const CreateWebinarButton = ({ stripeProducts }: Props) => {
         {isComplete ? (
           <div className="bg-muted text-primary rounded-lg overflow-hidden">
             <DialogTitle className="sr-only">Create Webinar</DialogTitle>
-            {/* SuccessStep */}
+            <SuccessStep
+              webinarLink={webinarLink}
+              onCreateNew={handleCreateNew}
+            />
           </div>
         ) : (
           <>

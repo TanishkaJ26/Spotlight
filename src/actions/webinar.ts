@@ -4,6 +4,7 @@ import { WebinarFormState } from "@/store/useWebinarStore";
 import { onAuthenticateUser } from "./auth";
 import { prismaClient } from "@/lib/prismaClient";
 import { revalidatePath } from "next/cache";
+import { WebinarStatusEnum } from "@prisma/client";
 
 function combinedDateTime(
   date: Date,
@@ -115,5 +116,56 @@ export const getWebinarByPresenterId = async (presenterId: string) => {
   } catch (error) {
     console.error("Error getting webinars:", error);
     return [];
+  }
+};
+
+export const getWebinarById = async (webinarId: string) => {
+  try {
+    const webinar = await prismaClient.webinar.findUnique({
+      where: { id: webinarId },
+      include: {
+        presenter: {
+          select: {
+            id: true,
+            name: true,
+            profileImage: true,
+            stripeConnectId: true,
+          },
+        },
+      },
+    });
+    return webinar;
+  } catch (error) {
+    console.error("Error fetching webinar:", error);
+    throw new Error("Failed to fetch webinar");
+  }
+};
+
+export const changeWebinarStatus = async (
+  webinarId: string,
+  status: WebinarStatusEnum,
+) => {
+  try {
+    const webinar = await prismaClient.webinar.update({
+      where: {
+        id: webinarId,
+      },
+      data: {
+        webinarStatus: status,
+      },
+    });
+    return {
+      status: 200,
+      success: true,
+      message: "Webinar status updated successfully",
+      dats: webinar,
+    };
+  } catch (error) {
+    console.error("Error updating webinar status: ", error);
+    return {
+      status: 500,
+      success: false,
+      message: "Failed to update webinar status. Please try again.",
+    };
   }
 };
