@@ -33,7 +33,9 @@ export const createWebinar = async (formData: WebinarFormState) => {
       return { status: 401, message: "Unauthorized" };
     }
 
-    // TODO: check if user has a subscription
+    if (!user.user.subscription) {
+      return { status: 402, message: "Subscription required" };
+    }
 
     const presenterId = user.user.id;
     console.log("Form Data:", formData, presenterId);
@@ -80,6 +82,7 @@ export const createWebinar = async (formData: WebinarFormState) => {
           : null,
         couponEnabled: formData.additionalInfo.couponEnabled || false,
         presenterId: presenterId,
+        thumbnail: formData.basicInfo.thumbnail || null,
       },
     });
     revalidatePath("/");

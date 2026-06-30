@@ -14,6 +14,7 @@ export type WebinarFormState = {
     date?: Date;
     time?: string;
     timeFormat?: "AM" | "PM";
+    thumbnail?: string;
   };
   cta: {
     ctaLabel?: string;
@@ -87,6 +88,7 @@ const initialState: WebinarFormState = {
     date: undefined,
     time: "",
     timeFormat: "AM",
+    thumbnail: "",
   },
   cta: {
     ctaLabel: "",

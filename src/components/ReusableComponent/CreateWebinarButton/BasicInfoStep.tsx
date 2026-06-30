@@ -19,9 +19,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { useWebinarStore } from "@/store/useWebinarStore";
 import { format } from "date-fns";
-import { CalendarIcon, Clock, Upload } from "lucide-react";
+import { CalendarIcon, Clock, Upload, X } from "lucide-react";
 import React from "react";
 import { toast } from "sonner";
+import { UploadButton } from "@/lib/uploadthing";
+import Image from "next/image";
 
 type Props = {};
 
@@ -29,7 +31,7 @@ const BasicInfoStep = (props: Props) => {
   const { formData, updateBasicInfoField, getStepValidationErrors } =
     useWebinarStore();
 
-  const { webinarName, description, date, time, timeFormat } =
+  const { webinarName, description, date, time, timeFormat, thumbnail } =
     formData.basicInfo;
 
   const handleChange = (
@@ -187,6 +189,51 @@ const BasicInfoStep = (props: Props) => {
           className="absolute inset-0 opacity-0 cursor-pointer"
           type="file" />
         </Button>
+      </div>
+
+      <div className="flex flex-col gap-2 mt-4">
+        <Label>Webinar Thumbnail</Label>
+        {thumbnail ? (
+          <div className="relative w-full h-40 rounded-lg overflow-hidden border border-input">
+            <Image
+              src={thumbnail}
+              alt="Thumbnail"
+              fill
+              className="object-cover"
+            />
+            <Button
+              variant="destructive"
+              size="icon"
+              className="absolute top-2 right-2 rounded-full h-8 w-8"
+              onClick={() => updateBasicInfoField("thumbnail", "")}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        ) : (
+          <div className="flex items-center justify-between border border-input rounded-md p-4 bg-background/50">
+            <div className="flex items-center text-sm text-gray-400">
+              <Upload className="h-4 w-4 mr-2" />
+              Upload an image to display on the waitlist page.
+            </div>
+            <UploadButton
+              endpoint="webinarImage"
+              onClientUploadComplete={(res) => {
+                if (res?.[0]) {
+                  updateBasicInfoField("thumbnail", res[0].url);
+                  toast.success("Thumbnail uploaded successfully");
+                }
+              }}
+              onUploadError={(error: Error) => {
+                toast.error(`Error uploading: ${error.message}`);
+              }}
+              appearance={{
+                button: "bg-white !text-black text-sm px-4 py-2 hover:bg-gray-200",
+                allowedContent: "hidden",
+              }}
+            />
+          </div>
+        )}
       </div>
 
     </div>
