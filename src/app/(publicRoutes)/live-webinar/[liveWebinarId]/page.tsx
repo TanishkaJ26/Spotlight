@@ -34,7 +34,7 @@ const page = async ({ params, searchParams }: Props) => {
     <div className="w-full in-h-screen mx-auto">
       <RenderWebinar
         error={error}
-        user={checkUser.user || null}
+        user={checkUser?.user || null}
         webinar={webinarData}
         apiKey={apiKey}
         token={token}

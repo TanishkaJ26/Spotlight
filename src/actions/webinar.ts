@@ -12,7 +12,7 @@ function combinedDateTime(
   timeFormat: "AM" | "PM",
 ): Date {
   const [hourStr, minutesStr] = timeStr.split(":");
-  let hours = Number.parseInt(minutesStr || "0", 10);
+  let hours = Number.parseInt(hourStr || "0", 10);
   const minutes = Number.parseInt(minutesStr || "0", 10);
 
   if (timeFormat === "PM" && hours < 12) {
