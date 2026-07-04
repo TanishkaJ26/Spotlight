@@ -1,4 +1,4 @@
-import PipelineIcon from "@/icons/PipeLIneIcon";
+import PipelineIcon from "@/icons/PipelineIcon";
 import { Webinar } from "@prisma/client";
 import { format } from "date-fns";
 import { Calendar } from "lucide-react";

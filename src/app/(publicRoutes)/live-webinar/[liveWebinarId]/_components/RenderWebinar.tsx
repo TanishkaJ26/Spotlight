@@ -8,6 +8,7 @@ import { useAttendeeStore } from "@/store/useAttendeeStore";
 import { toast } from "sonner";
 import LiveStreamState from "./LiveWebinar/LiveStreamState";
 import { WebinarWithPresenter } from "@/lib/type";
+import Participate from "./Participate/Participate";
 
 type Props = {
   error: string | undefined;
@@ -39,7 +40,7 @@ const RenderWebinar = ({
   }, [error]);
 
   return (
-    //TODO: bulid waiting room and live
+    //TODO: build waiting room and live
     <React.Fragment>
       {webinar.webinarStatus === WebinarStatusEnum.SCHEDULED ? (
         <WebinarUpcomingState webinar={webinar} currentUser={user || null} />
@@ -58,8 +59,7 @@ const RenderWebinar = ({
             />
           ) : //TODO: only show the participant view if they've registered
           attendee ? (
-            // <Participate apiKey={apiKey} token={token} callId={callId} />
-            "Livestream for participant"
+            <Participate apiKey={apiKey} webinar={webinar} callId={callId} />
           ) : (
             <WebinarUpcomingState
               webinar={webinar}

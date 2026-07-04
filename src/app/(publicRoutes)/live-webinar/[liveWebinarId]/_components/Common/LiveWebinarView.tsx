@@ -10,6 +10,7 @@ import { Chat, Channel, MessageList, MessageInput } from "stream-chat-react";
 import "stream-chat-react/dist/css/v2/index.css";
 import { useTheme } from "next-themes";
 import CTADialogBox from "./CTADialogBox";
+import { toast } from "sonner";
 
 type Props = {
   showChat: boolean;
@@ -25,8 +26,8 @@ const LiveWebinarView = ({
   showChat,
   setShowChat,
   isHost,
-  username,
   userId,
+  username,
   userToken,
   webinar,
 }: Props) => {
@@ -41,10 +42,14 @@ const LiveWebinarView = ({
 
   const handleCTAButtonClick = async () => {
     if (!channel) return;
-    console.log("CTA button clicked", channel);
-    await channel.sendEvent({
-      type: "open_cta_dialog",
-    });
+    try {
+      await channel.sendEvent({
+        type: "open_cta_dialog",
+      });
+    } catch (error) {
+      console.error("Error sending CTA event:", error);
+      toast.error("Failed to send CTA dialog");
+    }
   };
 
   useEffect(() => {
@@ -75,14 +80,20 @@ const LiveWebinarView = ({
   }, [userId, username, userToken, webinar.id, webinar.title]);
 
   useEffect(() => {
-    if (chatClient && channel) {
-      channel.on((event: any) => {
-        if (event.type === "open_cta_dialog" && !isHost) {
-          setDialogOpen(true);
-        }
-      });
-    }
-  }, [chatClient, channel, isHost]);
+    if (!chatClient || !channel) return;
+
+    const handleEvent = (event: any) => {
+      if (event.type === "open_cta_dialog" || event.type === "custom.open_cta_dialog") {
+        setDialogOpen(true);
+      }
+    };
+
+    channel.on(handleEvent);
+
+    return () => {
+      channel.off(handleEvent);
+    };
+  }, [chatClient, channel]);
 
   // if(!chatClient || !channel) return null
 

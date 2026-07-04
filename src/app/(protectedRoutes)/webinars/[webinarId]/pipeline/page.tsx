@@ -2,7 +2,7 @@ import getWebinarAttendance from "@/actions/attendance";
 import PageHeader from "@/components/ReusableComponent/PageHeader";
 import HomeIcon from "@/icons/HomeIcon";
 import LeadIcon from "@/icons/LeadIcon";
-import PipelineIcon from "@/icons/PipeLIneIcon";
+import PipelineIcon from "@/icons/PipelineIcon";
 import React from "react";
 import PipelineLayout from "./_components/PipelineLayout";
 import { AttendedTypeEnum } from "@prisma/client";

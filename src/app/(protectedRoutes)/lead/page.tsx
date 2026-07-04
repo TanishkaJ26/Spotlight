@@ -9,7 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import LeadIcon from "@/icons/LeadIcon";
-import PipelineIcon from "@/icons/PipeLIneIcon";
+import PipelineIcon from "@/icons/PipelineIcon";
 import { Webcam } from "lucide-react";
 import React from "react";
 import { leadData } from "./_tests_/data";

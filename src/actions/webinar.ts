@@ -161,7 +161,7 @@ export const changeWebinarStatus = async (
       status: 200,
       success: true,
       message: "Webinar status updated successfully",
-      dats: webinar,
+      data: webinar,
     };
   } catch (error) {
     console.error("Error updating webinar status: ", error);

@@ -101,9 +101,9 @@ const WaitListComponent = ({
         <Button
           className={`${
             webinarStatus === WebinarStatusEnum.LIVE
-              ? "bg-red-600 hover:bg-red-700"
+              ? "bg-red-800 hover:bg-red-900"
               : "bg-primary hover:bg-primary/90"
-          } rounded-md px-4 py-2 text-primary-foreground text-sm font-semibold`}
+          } rounded-md px-4 py-2 text-white-foreground text-sm font-bold`}
         >
           {webinarStatus === WebinarStatusEnum.LIVE && (
             <span className="mr-2 h-2 w-2 bg-white rounded-full animate-pulse"></span>

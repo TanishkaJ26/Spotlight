@@ -109,6 +109,7 @@ const getWebinarAttendance = async (
               joinedAt: "desc",
             },
           });
+          //TODO: fix this
           result[type].users = attendances.map((attendance) => ({
             id: attendance.user.id,
             name: attendance.user.name,
@@ -120,7 +121,7 @@ const getWebinarAttendance = async (
         }
       }
     }
-    // revalidatePath(`/webinars/${webinarId}/pipelines`)
+    // revalidatePath(`/webinars/${webinarId}/pipeline`)
     return {
       success: true,
       data: result,
@@ -202,6 +203,7 @@ export const registerAttendee = async ({
     });
 
     revalidatePath(`/${webinarId}`);
+    revalidatePath(`/webinars/${webinarId}/pipeline`);
 
     return {
       success: true,
@@ -216,6 +218,39 @@ export const registerAttendee = async ({
       status: 500,
       error: err,
       message: "Something went wrong",
+    };
+  }
+};
+
+export const changeAttendanceType = async (
+  attendeeId: string,
+  webinarId: string,
+  attendedType: AttendedTypeEnum,
+) => {
+  try {
+    const attendance = await prismaClient.attendance.update({
+      where: {
+        attendeeId_webinarId: {
+          attendeeId,
+          webinarId,
+        },
+      },
+      data: { attendedType },
+    });
+
+    return {
+      success: true,
+      status: 200,
+      message: "Attendance type updates successfully",
+      data: attendance,
+    };
+  } catch (error) {
+    console.error("Error updating attendance type:", error);
+    return {
+      success: false,
+      status: 500,
+      message: "Failed to update attendance type",
+      error,
     };
   }
 };
