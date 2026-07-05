@@ -61,6 +61,7 @@ const LiveWebinarView = ({
         {
           id: userId,
           name: username,
+          image: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(username)}&backgroundColor=a76ef6`,
         },
         userToken,
       );
@@ -83,7 +84,10 @@ const LiveWebinarView = ({
     if (!chatClient || !channel) return;
 
     const handleEvent = (event: any) => {
-      if (event.type === "open_cta_dialog" || event.type === "custom.open_cta_dialog") {
+      if (
+        event.type === "open_cta_dialog" ||
+        event.type === "custom.open_cta_dialog"
+      ) {
         setDialogOpen(true);
       }
     };

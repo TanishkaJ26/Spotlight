@@ -6,11 +6,12 @@ import { UserRequest } from "@stream-io/video-react-sdk";
 
 export const getStreamIoToken = async (attendee: Attendee | null) => {
   try {
+    const seed = encodeURIComponent(attendee?.name || "Guest");
     const newUser: UserRequest = {
       id: attendee?.id || "guest",
       //TODO: add role
       name: attendee?.name || "Guest",
-      image: `https://api.dicebear.com/7.x/initials/svg?seed=${attendee?.name || "Guest"}`,
+      image: `https://api.dicebear.com/7.x/initials/svg?seed=${seed}&backgroundColor=a76ef6`,
     };
     await getStreamClient.upsertUsers([newUser]);
 

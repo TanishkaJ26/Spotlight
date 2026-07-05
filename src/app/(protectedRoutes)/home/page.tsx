@@ -39,7 +39,7 @@ const Pages = (props: Props) => {
           link="/lead"
         >
           <div className="p-5 flex flex-col gap-4 items-start border rounded-xl border-border backdrop-blur-3xl">
-            <div class-name="w-full flex justify-between items-center gap-3">
+            <div className="w-full flex justify-between items-center gap-3">
               <p className="text-primary font-semibold text-sm">Conversions</p>
               <p className="text-xs text-muted-foreground font-normal">50</p>
             </div>
