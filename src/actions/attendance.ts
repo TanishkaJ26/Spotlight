@@ -4,6 +4,7 @@ import { prismaClient } from "@/lib/prismaClient";
 import { AttendanceData } from "@/lib/type";
 import { AttendedTypeEnum, CtaTypeEnum } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { getWebinarByPresenterId } from "./webinar";
 
 const getWebinarAttendance = async (
   webinarId: string,
@@ -19,6 +20,7 @@ const getWebinarAttendance = async (
         id: true,
         ctaType: true,
         tags: true,
+        presenter: true,
         _count: {
           select: {
             attendances: true,
@@ -70,6 +72,7 @@ const getWebinarAttendance = async (
         ) {
           return true;
         }
+        return item.attendedType === type;
       });
 
       result[type] = {
@@ -117,16 +120,19 @@ const getWebinarAttendance = async (
             attendedAt: attendance.joinedAt,
             stripeConnectedId: null,
             callStatus: attendance.user.callStatus,
+            createdAt: attendance.user.createdAt,
+            updatedAt: attendance.user.updatedAt,
           }));
         }
       }
     }
-    // revalidatePath(`/webinars/${webinarId}/pipeline`)
+
     return {
       success: true,
       data: result,
       ctaType: webinar.ctaType,
       webinarTags: webinar.tags || [],
+      presenter: webinar.presenter,
     };
   } catch (error) {
     console.error("Failed to fetch attendance data: ", error);

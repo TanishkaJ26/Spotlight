@@ -4,21 +4,31 @@ import LeadIcon from "@/icons/LeadIcon";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import HomeIcon from "@/icons/HomeIcon";
 import PageHeader from "@/components/ReusableComponent/PageHeader";
-import { Webinar } from "@prisma/client";
+import { Webinar, WebinarStatusEnum } from "@prisma/client";
 import { onAuthenticateUser } from "@/actions/auth";
 import { redirect } from "next/navigation";
 import { getWebinarByPresenterId } from "@/actions/webinar";
 import WebinarCard from "./_components/WebinarCard";
+import Link from "next/link";
 
-type Props = {};
+type Props = {
+  searchParams: Promise<{
+    webinarStatus: string;
+  }>;
+};
 
-const Page = async (props: Props) => {
+const Page = async ({ searchParams }: Props) => {
+  const { webinarStatus } = await searchParams;
   const checkUser = await onAuthenticateUser();
   if (!checkUser.user) {
     redirect("/");
   }
 
-  const webinars = (await getWebinarByPresenterId(checkUser?.user?.id)) || [];
+  const webinars =
+    (await getWebinarByPresenterId(
+      checkUser?.user?.id,
+      webinarStatus as WebinarStatusEnum,
+    )) || [];
 
   const now = new Date();
   const upcomingWebinars = webinars.filter(
@@ -48,19 +58,19 @@ const Page = async (props: Props) => {
             value="all"
             className="bg-transparent border border-transparent data-[state=active]:bg-secondary data-[state=active]:border-border text-muted-foreground data-[state=active]:text-secondary-foreground rounded-lg px-6 py-2"
           >
-            All
+            <Link href="/webinars?webinarStatus=all">All</Link>
           </TabsTrigger>
           <TabsTrigger
             value="upcoming"
             className="bg-transparent border border-transparent data-[state=active]:bg-secondary data-[state=active]:border-border text-muted-foreground data-[state=active]:text-secondary-foreground rounded-lg px-6 py-2"
           >
-            Upcoming
+            <Link href="/webinars?webinarStatus=upcoming">Upcoming</Link>
           </TabsTrigger>
           <TabsTrigger
             value="ended"
             className="bg-transparent border border-transparent data-[state=active]:bg-secondary data-[state=active]:border-border text-muted-foreground data-[state=active]:text-secondary-foreground rounded-lg px-6 py-2"
           >
-            Ended
+            <Link href="/webinars?webinarStatus=ended">Ended</Link>
           </TabsTrigger>
         </TabsList>
       </PageHeader>

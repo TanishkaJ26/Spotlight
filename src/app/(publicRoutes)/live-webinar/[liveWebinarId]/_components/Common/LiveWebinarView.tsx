@@ -1,7 +1,11 @@
 "use client";
 import { WebinarWithPresenter } from "@/lib/type";
-import { ParticipantView, useCallStateHooks } from "@stream-io/video-react-sdk";
-import { MessageSquare, Users } from "lucide-react";
+import {
+  ParticipantView,
+  useCallStateHooks,
+  type Call,
+} from "@stream-io/video-react-sdk";
+import { Loader2, MessageSquare, Users, Video, StopCircle } from "lucide-react";
 import { StreamChat } from "stream-chat";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -11,6 +15,8 @@ import "stream-chat-react/dist/css/v2/index.css";
 import { useTheme } from "next-themes";
 import CTADialogBox from "./CTADialogBox";
 import { toast } from "sonner";
+import { changeWebinarStatus } from "@/actions/webinar";
+import { useRouter } from "next/navigation";
 
 type Props = {
   showChat: boolean;
@@ -19,6 +25,7 @@ type Props = {
   username: string;
   userId: string;
   userToken: string;
+  call: Call;
   webinar: WebinarWithPresenter;
 };
 
@@ -30,15 +37,45 @@ const LiveWebinarView = ({
   username,
   userToken,
   webinar,
+  call,
 }: Props) => {
-  const { useParticipantCount, useParticipants } = useCallStateHooks();
+  const { useParticipantCount, useParticipants, useIsCallRecordingInProgress } =
+    useCallStateHooks();
   const participants = useParticipants();
   const viewerCount = useParticipantCount();
+  const isRecording = useIsCallRecordingInProgress();
   const [chatClient, setChatClient] = useState<StreamChat | null>(null);
   const [channel, setChannel] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const { resolvedTheme } = useTheme();
   const hostParticipant = participants.length > 0 ? participants[0] : null;
+  const [loading, setLoading] = useState(false);
+  const [recordings, setRecordings] = useState<any[]>([]);
+  const [fetchingRecordings, setFetchingRecordings] = useState(false);
+  const router = useRouter();
+  const [obsDialogBox, setObsDialogBox] = useState(false);
+
+  const handleEndStream = async () => {
+    setLoading(true);
+    try {
+      call.stopLive({
+        continue_recording: false,
+      });
+      call.endCall();
+
+      const res = await changeWebinarStatus(webinar.id, "ENDED");
+      if (!res.success) {
+        throw new Error(res.message);
+      }
+      toast.success("Webinar ended successfully");
+      router.push("/");
+    } catch (error) {
+      console.error("Error ending stream", error);
+      toast.error("Error ending stream");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleCTAButtonClick = async () => {
     if (!channel) return;
@@ -99,6 +136,50 @@ const LiveWebinarView = ({
     };
   }, [chatClient, channel]);
 
+  useEffect(() => {
+    call.on("call.rtmp_broadcast_started", () => {
+      toast.success("Webinar started siccessfully");
+      router.refresh();
+    });
+
+    call.on("call.rtmp_broadcast_failed", () => {
+      toast.error("Stream failed to start. Please try again.");
+    });
+  }, [call]);
+
+  //FETCH RECORDINGS
+  useEffect(() => {
+    const fetchRecordings = async () => {
+      setFetchingRecordings(true);
+      try {
+        const response = await call.queryRecordings();
+        setRecordings(response.recordings);
+      } catch (error) {
+        console.error("Error fetching recordings", error);
+      } finally {
+        setFetchingRecordings(false);
+      }
+    };
+    if (call) {
+      fetchRecordings();
+    }
+  }, [call]);
+
+  const handleToggleRecording = async () => {
+    try {
+      if (isRecording) {
+        await call.stopRecording();
+        toast.success("Recording stopped");
+      } else {
+        await call.startRecording();
+        toast.success("Recording started");
+      }
+    } catch (error) {
+      console.error("Error toggling recording:", error);
+      toast.error("Failed to toggle recording");
+    }
+  };
+
   // if(!chatClient || !channel) return null
 
   return (
@@ -143,12 +224,38 @@ const LiveWebinarView = ({
                   className="w-full h-full object-cover !max-w-full"
                 />
               </div>
+            ) : recordings.length > 0 ? (
+              <div className="w-full h-full p-4 overflow-y-auto flex flex-col gap-4">
+                <h3 className="text-lg font-semibold">Previous Recordings</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {recordings.map((recording, index) => (
+                    <div
+                      key={index}
+                      className="flex flex-col gap-2 border border-border rounded-lg p-3 bg-muted/30"
+                    >
+                      <video
+                        src={recording.url}
+                        controls
+                        className="w-full rounded-md object-cover bg-black"
+                      />
+                      <p className="text-sm text-muted-foreground mt-2 font-medium">
+                        Recorded on{" "}
+                        {new Date(recording.start_time).toLocaleDateString()}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
             ) : (
               <div className="w-full h-full flex items-center justify-center text-muted-foreground flex-col space-y-4">
                 <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center">
                   <Users size={40} className="text-muted-foreground" />
                 </div>
-                <p>Waiting for stream to start...</p>
+                <p>
+                  {fetchingRecordings
+                    ? "Checking for recordings..."
+                    : "Waiting for stream to start..."}
+                </p>
               </div>
             )}
 
@@ -168,6 +275,36 @@ const LiveWebinarView = ({
 
             {isHost && (
               <div className="flex items-center space-x-1">
+                <Button
+                  onClick={() => setObsDialogOpen(true)}
+                  variant="outline"
+                  className="mr-2"
+                >OBS Creds</Button>
+                <Button
+                  onClick={handleToggleRecording}
+                  variant={isRecording ? "destructive" : "secondary"}
+                >
+                  {isRecording ? (
+                    <StopCircle className="mr-2 h-4 w-4" />
+                  ) : (
+                    <Video className="mr-2 h-4 w-4" />
+                  )}
+                  {isRecording ? "Stop Recording" : "Start Recording"}
+                </Button>
+                <Button
+                  onClick={handleEndStream}
+                  disabled={loading}
+                  variant="destructive"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="animate-spin mr-2 h-4 w-4" />
+                      Ending...
+                    </>
+                  ) : (
+                    "End Stream"
+                  )}
+                </Button>
                 <Button onClick={handleCTAButtonClick}>
                   {webinar.ctaType === CtaTypeEnum.BOOK_A_CALL
                     ? "Book a Call"
@@ -215,6 +352,14 @@ const LiveWebinarView = ({
           onOpenChange={setDialogOpen}
           webinar={webinar}
           userId={userId}
+        />
+      )}
+      {obsDialogBox && (
+        <ObsDialogBox
+          open={obsDialogBox}
+          onOpenChange={setObsDialogOpen}
+          rtmpURL={`rtmps://ingress.stream-io-video.com/443/${process.env.NEXT_PUBLIC_STREAM_API_KEY}.livestream.${webinar.id}`}
+          streamToken={userToken}
         />
       )}
     </div>

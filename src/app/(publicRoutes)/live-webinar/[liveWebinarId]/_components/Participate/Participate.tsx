@@ -52,6 +52,7 @@ const Participate = ({ apiKey, webinar, callId }: Props) => {
           user,
           token: userToken,
         });
+
         streamClient.on("connection.changed", (event) => {
           if (event.online) {
             setConnectionStatus("connected");
@@ -214,6 +215,7 @@ const Participate = ({ apiKey, webinar, callId }: Props) => {
           username={attendee?.name}
           userId={attendee?.id}
           userToken={token}
+          call={call}
         />
       </StreamCall>
     </StreamVideo>

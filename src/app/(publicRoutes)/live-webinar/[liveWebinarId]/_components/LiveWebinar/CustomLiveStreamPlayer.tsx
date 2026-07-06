@@ -31,7 +31,7 @@ const CustomLiveStreamPlayer = ({
     if (!client) return;
     const myCall = client?.call(callType, callId);
     setCall(myCall);
-    myCall.join().catch((e) => {
+    myCall.join({ create: true }).catch((e) => {
       console.error("Failed to join call", e);
     });
 
@@ -53,8 +53,9 @@ const CustomLiveStreamPlayer = ({
         isHost={true}
         username={username}
         userId={process.env.NEXT_PUBLIC_STREAM_USER_ID!}
-        userToken={token} 
+        userToken={token}
         webinar={webinar}
+        call={call}
       />
     </StreamCall>
   );
