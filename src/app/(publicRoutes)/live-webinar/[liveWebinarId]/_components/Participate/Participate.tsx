@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { WebinarWithPresenter } from "@/lib/type";
 import { useAttendeeStore } from "@/store/useAttendeeStore";
 import {
+  Call,
   StreamCall,
   StreamVideo,
   StreamVideoClient,
@@ -63,6 +64,8 @@ const Participate = ({ apiKey, webinar, callId }: Props) => {
 
         // await streamClient.connectUser(user, userToken);
         const streamCall = streamClient.call("livestream", callId);
+        
+        await streamCall.join();
 
         setClient(streamClient);
         setCall(streamCall);
@@ -103,7 +106,7 @@ const Participate = ({ apiKey, webinar, callId }: Props) => {
           });
       }
     };
-  }, [apiKey, callId, attendee, call, client]);
+  }, [apiKey, callId, attendee, call, client, webinar.id]);
 
   if (!attendee) {
     return (

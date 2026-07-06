@@ -1,8 +1,11 @@
 import { onAuthenticateUser } from "@/actions/auth";
 import { getWebinarById } from "@/actions/webinar";
+import { getStreamRecording } from "@/actions/streamIo";
 import React from "react";
 import RenderWebinar from "./_components/RenderWebinar";
 import { getStreamClient } from "@/lib/stream/streamClient";
+import { WebinarWithPresenter } from "@/lib/type";
+import { WebinarStatusEnum } from "@prisma/client";
 
 type Props = {
   params: Promise<{
@@ -16,8 +19,14 @@ type Props = {
 const page = async ({ params, searchParams }: Props) => {
   const { liveWebinarId } = await params;
   const { error } = await searchParams;
-
   const webinarData = await getWebinarById(liveWebinarId);
+
+  let recording = null;
+
+  if (webinarData?.webinarStatus === WebinarStatusEnum.ENDED) {
+    recording = await getStreamRecording(liveWebinarId);
+  }
+
   if (!webinarData) {
     return (
       <div className="w-full min-h-screen flex justify-center items-center text-lg sm:text-4xl">
@@ -28,36 +37,35 @@ const page = async ({ params, searchParams }: Props) => {
   const checkUser = await onAuthenticateUser();
   //TODO: create API keys
   const apiKey = process.env.NEXT_PUBLIC_STREAM_API_KEY as string;
-  
-  let token = process.env.STREAM_TOKEN as string;
-  if (checkUser?.user?.id === webinarData.presenterId) {
-    const streamUserId = process.env.NEXT_PUBLIC_STREAM_USER_ID!;
-    await getStreamClient.upsertUsers([
-      {
-        id: streamUserId,
-        name: checkUser.user.name || "Host",
-        role: "admin",
-      },
-    ]);
 
-    const validity = 60 * 60 * 60;
-    token = getStreamClient.generateUserToken({
-      user_id: streamUserId,
-      validity_in_seconds: validity,
-    });
-  }
+  // let token = process.env.STREAM_TOKEN as string;
+  // if (checkUser?.user?.id === webinarData.presenterId) {
+  //   const streamUserId = process.env.NEXT_PUBLIC_STREAM_USER_ID!;
+  //   await getStreamClient.upsertUsers([
+  //     {
+  //       id: streamUserId,
+  //       name: checkUser.user.name || "Host",
+  //       role: "admin",
+  //     },
+  //   ]);
 
-  const callId = process.env.STREAM_CALL_ID as string; // or webinarData.id if you want to make it dynamic
+  //   const validity = 60 * 60 * 60;
+  //   token = getStreamClient.generateUserToken({
+  //     user_id: streamUserId,
+  //     validity_in_seconds: validity,
+  //   });
+  // }
+
+  // const callId = process.env.STREAM_CALL_ID as string; // or webinarData.id if you want to make it dynamic
 
   return (
     <div className="w-full in-h-screen mx-auto">
       <RenderWebinar
         error={error}
         user={checkUser?.user || null}
-        webinar={webinarData}
+        webinar={webinarData as WebinarWithPresenter}
         apiKey={apiKey}
-        token={token}
-        callId={callId}
+        recording={recording || null}
       />
     </div>
   );

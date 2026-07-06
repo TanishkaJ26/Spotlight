@@ -49,7 +49,11 @@ const LiveWebinarView = ({
   const [channel, setChannel] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const { resolvedTheme } = useTheme();
-  const hostParticipant = participants.length > 0 ? participants[0] : null;
+  const presenterParticipants = participants.filter((p) => p.userId === webinar.presenter.id);
+  const hostParticipant =
+    presenterParticipants.find((p) => p.publishedTracks && p.publishedTracks.length > 0) ||
+    presenterParticipants[0] ||
+    (participants.length > 0 ? participants[0] : null);
   const [loading, setLoading] = useState(false);
   const [recordings, setRecordings] = useState<any[]>([]);
   const [fetchingRecordings, setFetchingRecordings] = useState(false);
@@ -280,7 +284,9 @@ const LiveWebinarView = ({
                   onClick={() => setObsDialogBox(true)}
                   variant="outline"
                   className="mr-2"
-                >OBS Creds</Button>
+                >
+                  OBS Creds
+                </Button>
                 <Button
                   onClick={handleToggleRecording}
                   variant={isRecording ? "destructive" : "secondary"}

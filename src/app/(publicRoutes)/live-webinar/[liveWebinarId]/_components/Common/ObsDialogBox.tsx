@@ -7,8 +7,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Copy } from "lucide-react";
-import React from "react";
+import { Copy, Eye, EyeOff } from "lucide-react";
+import React, { useState } from "react";
 import { toast } from "sonner";
 
 type Props = {
@@ -19,6 +19,8 @@ type Props = {
 };
 
 const ObsDialogBox = ({ open, onOpenChange, rtmpURL, streamKey }: Props) => {
+  const [showKey, setShowKey] = useState(false);
+
   const copyToClipboard = async (text: string, label: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -52,11 +54,25 @@ const ObsDialogBox = ({ open, onOpenChange, rtmpURL, streamKey }: Props) => {
           <div className="space-y-2">
             <Label className="text-sm font-medium">Stream Key</Label>
             <div className="flex">
-              <Input value={streamKey} readOnly className="flex-1" />
+              <div className="relative flex-1">
+                <Input 
+                  value={streamKey} 
+                  readOnly 
+                  className="w-full pr-10" 
+                  type={showKey ? "text" : "password"}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowKey(!showKey)}
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {showKey ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
               <Button
                 variant="outline"
                 size="icon"
-                className="ml-2"
+                className="ml-2 shrink-0"
                 onClick={() => copyToClipboard(streamKey, "Stream Key")}
               >
                 <Copy size={16} />
