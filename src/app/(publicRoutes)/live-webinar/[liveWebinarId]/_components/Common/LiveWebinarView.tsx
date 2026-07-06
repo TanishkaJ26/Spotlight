@@ -17,6 +17,7 @@ import CTADialogBox from "./CTADialogBox";
 import { toast } from "sonner";
 import { changeWebinarStatus } from "@/actions/webinar";
 import { useRouter } from "next/navigation";
+import ObsDialogBox from "./ObsDialogBox";
 
 type Props = {
   showChat: boolean;
@@ -276,7 +277,7 @@ const LiveWebinarView = ({
             {isHost && (
               <div className="flex items-center space-x-1">
                 <Button
-                  onClick={() => setObsDialogOpen(true)}
+                  onClick={() => setObsDialogBox(true)}
                   variant="outline"
                   className="mr-2"
                 >OBS Creds</Button>
@@ -357,9 +358,9 @@ const LiveWebinarView = ({
       {obsDialogBox && (
         <ObsDialogBox
           open={obsDialogBox}
-          onOpenChange={setObsDialogOpen}
+          onOpenChange={setObsDialogBox}
           rtmpURL={`rtmps://ingress.stream-io-video.com/443/${process.env.NEXT_PUBLIC_STREAM_API_KEY}.livestream.${webinar.id}`}
-          streamToken={userToken}
+          streamKey={userToken}
         />
       )}
     </div>
