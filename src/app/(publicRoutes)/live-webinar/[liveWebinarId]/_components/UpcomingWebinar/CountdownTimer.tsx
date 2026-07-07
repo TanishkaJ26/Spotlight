@@ -1,6 +1,7 @@
 import { changeWebinarStatus } from "@/actions/webinar";
 import { cn } from "@/lib/utils";
 import { WebinarStatusEnum } from "@prisma/client";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 type Props = {
@@ -16,6 +17,7 @@ const CountdownTimer = ({
   webinarId,
   webinarStatus,
 }: Props) => {
+  const router = useRouter();
   const [isExpired, setIsExpired] = useState(false);
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -52,12 +54,15 @@ const CountdownTimer = ({
                   webinarId,
                   WebinarStatusEnum.WAITING_ROOM,
                 );
+                router.refresh();
               } catch (err) {
                 console.error(err);
               }
             };
 
             updateStatus();
+          } else {
+            router.refresh();
           }
         }
 
@@ -88,58 +93,56 @@ const CountdownTimer = ({
 
   return (
     <div className={cn("text-center", className)}>
-      {!isExpired && (
-        <div className="flex items-center justify-center gap-4 mb-8">
-          {timeLeft.days > 0 && (
-            <div className="space-y-2">
-              <p className="text-sm text-muted-foreground">Days</p>
-              <div className="flex justify-center gap-1">
-                <div className="bg-secondary w-10 h-12 flex items-center justify-center rounded text-xl">
-                  {days1}
-                </div>
-                <div className="bg-secondary w-10 h-12 flex items-center justify-center rounded text-xl">
-                  {days2}
-                </div>
-              </div>
-            </div>
-          )}
+      <div className="flex items-center justify-center gap-4 mb-8">
+        {timeLeft.days > 0 && (
           <div className="space-y-2">
-            <p className="text-sm text-muted-foreground">Hours</p>
+            <p className="text-sm text-muted-foreground">Days</p>
             <div className="flex justify-center gap-1">
               <div className="bg-secondary w-10 h-12 flex items-center justify-center rounded text-xl">
-                {hours1}
+                {days1}
               </div>
               <div className="bg-secondary w-10 h-12 flex items-center justify-center rounded text-xl">
-                {hours2}
+                {days2}
               </div>
             </div>
           </div>
-
-          <div className="space-y-2">
-            <p className="text-sm text-muted-foreground">Minutes</p>
-            <div className="flex justify-center gap-1">
-              <div className="bg-secondary w-10 h-12 flex items-center justify-center rounded text-xl">
-                {minutes1}
-              </div>
-              <div className="bg-secondary w-10 h-12 flex items-center justify-center rounded text-xl">
-                {minutes2}
-              </div>
+        )}
+        <div className="space-y-2">
+          <p className="text-sm text-muted-foreground">Hours</p>
+          <div className="flex justify-center gap-1">
+            <div className="bg-secondary w-10 h-12 flex items-center justify-center rounded text-xl">
+              {hours1}
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <p className="text-sm text-muted-foreground">Seconds</p>
-            <div className="flex justify-center gap-1">
-              <div className="bg-secondary w-10 h-12 flex items-center justify-center rounded text-xl">
-                {seconds1}
-              </div>
-              <div className="bg-secondary w-10 h-12 flex items-center justify-center rounded text-xl">
-                {seconds2}
-              </div>
+            <div className="bg-secondary w-10 h-12 flex items-center justify-center rounded text-xl">
+              {hours2}
             </div>
           </div>
         </div>
-      )}
+
+        <div className="space-y-2">
+          <p className="text-sm text-muted-foreground">Minutes</p>
+          <div className="flex justify-center gap-1">
+            <div className="bg-secondary w-10 h-12 flex items-center justify-center rounded text-xl">
+              {minutes1}
+            </div>
+            <div className="bg-secondary w-10 h-12 flex items-center justify-center rounded text-xl">
+              {minutes2}
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <p className="text-sm text-muted-foreground">Seconds</p>
+          <div className="flex justify-center gap-1">
+            <div className="bg-secondary w-10 h-12 flex items-center justify-center rounded text-xl">
+              {seconds1}
+            </div>
+            <div className="bg-secondary w-10 h-12 flex items-center justify-center rounded text-xl">
+              {seconds2}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

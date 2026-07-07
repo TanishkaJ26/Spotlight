@@ -41,7 +41,7 @@ const WaitListComponent = ({
       case WebinarStatusEnum.SCHEDULED:
         return "Get Reminder";
       case WebinarStatusEnum.WAITING_ROOM:
-        return "Get Reminder";
+        return "Join Webinar";
       case WebinarStatusEnum.LIVE:
         return "Join Webinar";
       default:

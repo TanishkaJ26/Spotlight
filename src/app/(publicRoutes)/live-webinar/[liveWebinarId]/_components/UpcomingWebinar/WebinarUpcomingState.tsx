@@ -6,7 +6,8 @@ import Image from "next/image";
 import WaitListComponent from "./WaitListComponent";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, Loader2 } from "lucide-react";
-import { changeWebinarStatus } from "@/actions/webinar";
+import { changeWebinarStatus, getWebinarById } from "@/actions/webinar";
+import { useAttendeeStore } from "@/store/useAttendeeStore";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -20,6 +21,32 @@ type Props = {
 const WebinarUpcomingState = ({ webinar, currentUser }: Props) => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { attendee } = useAttendeeStore();
+
+  React.useEffect(() => {
+    // Only poll if the current user is NOT the presenter
+    if (currentUser?.id === webinar.presenterId) return;
+    
+    // Only poll if we are waiting for the webinar to start
+    if (webinar.webinarStatus !== "SCHEDULED" && webinar.webinarStatus !== "WAITING_ROOM") return;
+
+    // Only automatically join if they have an attendee record (joined the waitlist)
+    if (!attendee) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const latestWebinar = await getWebinarById(webinar.id);
+        if (latestWebinar?.webinarStatus === "LIVE") {
+          toast.success("Webinar is starting! Joining automatically...");
+          router.refresh(); // Triggers server component re-render to load Participate.tsx
+        }
+      } catch (error) {
+        console.error("Failed to poll webinar status", error);
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [currentUser?.id, webinar.presenterId, webinar.id, webinar.webinarStatus, attendee, router]);
 
   const handleStartWebinar = async () => {
     setLoading(true);
@@ -44,8 +71,8 @@ const WebinarUpcomingState = ({ webinar, currentUser }: Props) => {
     }
   };
   return (
-    <div className="w-full min-h-screen mx-auto max-w-[400px] flex flex-col justify-center items-center gap-8 py-20">
-      <div className="space-y-6">
+    <div className="w-full h-[100dvh] overflow-hidden mx-auto max-w-[400px] flex flex-col justify-center items-center gap-4 py-4">
+      <div className="space-y-4">
         <p className="text-3xl font-semibold text-primary text-center">
           Seems like you are a little early.
         </p>
@@ -56,8 +83,8 @@ const WebinarUpcomingState = ({ webinar, currentUser }: Props) => {
           webinarStatus={webinar.webinarStatus}
         />
       </div>
-      <div className="space-y-6 w-full h-full flex justify-center items-center flex-col">
-        <div className="w-full max-w-md aspect-video relative rounded-4xl overflow-hidden mb-6">
+      <div className="w-full flex justify-center items-center flex-col">
+        <div className="w-full max-w-md aspect-video relative rounded-4xl overflow-hidden mb-4">
           <Image
             src={webinar.thumbnail || "/darkthumbnail.png"}
             alt={webinar.title}

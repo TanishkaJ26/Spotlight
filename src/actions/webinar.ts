@@ -106,21 +106,29 @@ export const getWebinarByPresenterId = async (
   webinarStatus?: string,
 ) => {
   try {
-    let statusFilter: WebinarStatusEnum | undefined;
+    let whereClause: any = { presenterId };
 
-    switch (webinarStatus) {
-      case "upcoming":
-        statusFilter = WebinarStatusEnum.SCHEDULED;
-        break;
-      case "ended":
-        statusFilter = WebinarStatusEnum.ENDED;
-        break;
-      default:
-        statusFilter = undefined;
+    if (webinarStatus === "upcoming") {
+      whereClause = {
+        ...whereClause,
+        webinarStatus: { notIn: ["ENDED", "CANCELLED"] },
+        startTime: { gte: new Date() },
+      };
+    } else if (webinarStatus === "ended") {
+      whereClause = {
+        ...whereClause,
+        OR: [
+          { webinarStatus: { in: ["ENDED", "CANCELLED"] } },
+          { startTime: { lt: new Date() } },
+        ],
+      };
     }
 
     const webinars = await prismaClient.webinar.findMany({
-      where: { presenterId, webinarStatus: statusFilter },
+      where: whereClause,
+      orderBy: {
+        startTime: "asc",
+      },
       include: {
         presenter: {
           select: {

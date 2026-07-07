@@ -1,5 +1,6 @@
 "use client";
 import { WebinarWithPresenter } from "@/lib/type";
+import "stream-chat-react/dist/css/v2/index.css";
 import {
   ParticipantView,
   useCallStateHooks,
@@ -49,9 +50,13 @@ const LiveWebinarView = ({
   const [channel, setChannel] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const { resolvedTheme } = useTheme();
-  const presenterParticipants = participants.filter((p) => p.userId === webinar.presenter.id);
+  const presenterParticipants = participants.filter(
+    (p) => p.userId === webinar.presenter.id,
+  );
   const hostParticipant =
-    presenterParticipants.find((p) => p.publishedTracks && p.publishedTracks.length > 0) ||
+    presenterParticipants.find(
+      (p) => p.publishedTracks && p.publishedTracks.length > 0,
+    ) ||
     presenterParticipants[0] ||
     (participants.length > 0 ? participants[0] : null);
   const [loading, setLoading] = useState(false);
@@ -132,6 +137,10 @@ const LiveWebinarView = ({
       ) {
         setDialogOpen(true);
       }
+
+      if (event.type === "start_live") {
+        window.location.reload();
+      }
     };
 
     channel.on(handleEvent);
@@ -140,17 +149,6 @@ const LiveWebinarView = ({
       channel.off(handleEvent);
     };
   }, [chatClient, channel]);
-
-  useEffect(() => {
-    call.on("call.rtmp_broadcast_started", () => {
-      toast.success("Webinar started siccessfully");
-      router.refresh();
-    });
-
-    call.on("call.rtmp_broadcast_failed", () => {
-      toast.error("Stream failed to start. Please try again.");
-    });
-  }, [call]);
 
   //FETCH RECORDINGS
   useEffect(() => {
@@ -222,7 +220,7 @@ const LiveWebinarView = ({
       <div className="flex flex-1 p-2 gap-2 overflow-hidden">
         <div className="flex-1 rounded-lg overflow-hidden border border-border flex flex-col bg-card">
           <div className="flex-1 relative overflow-hidden">
-            {hostParticipant ? (
+            {webinar.webinarStatus !== "ENDED" && hostParticipant ? (
               <div className="w-full h-full">
                 <ParticipantView
                   participant={hostParticipant}
@@ -230,25 +228,47 @@ const LiveWebinarView = ({
                 />
               </div>
             ) : recordings.length > 0 ? (
-              <div className="w-full h-full p-4 overflow-y-auto flex flex-col gap-4">
-                <h3 className="text-lg font-semibold">Previous Recordings</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {recordings.map((recording, index) => (
-                    <div
-                      key={index}
-                      className="flex flex-col gap-2 border border-border rounded-lg p-3 bg-muted/30"
-                    >
-                      <video
-                        src={recording.url}
-                        controls
-                        className="w-full rounded-md object-cover bg-black"
-                      />
-                      <p className="text-sm text-muted-foreground mt-2 font-medium">
-                        Recorded on{" "}
-                        {new Date(recording.start_time).toLocaleDateString()}
-                      </p>
-                    </div>
-                  ))}
+              <div className="w-full h-full p-6 sm:p-10 overflow-y-auto flex flex-col gap-8 bg-gradient-to-b from-background to-muted/20">
+                <div className="flex flex-col gap-4">
+                  <h3 className="text-2xl font-bold flex items-center gap-2">
+                    <Video className="w-6 h-6 text-primary" />
+                    Recordings
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {recordings.map((recording, index) => (
+                      <div
+                        key={index}
+                        className="group flex flex-col gap-3 rounded-xl overflow-hidden bg-card border border-border shadow-sm hover:shadow-md transition-all duration-300 hover:border-primary/40"
+                      >
+                        <div className="relative aspect-video w-full bg-black/90 overflow-hidden">
+                          <video
+                            src={recording.url}
+                            controls
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
+                        <div className="p-4">
+                          <h4 className="font-semibold text-lg line-clamp-1 group-hover:text-primary transition-colors">
+                            {webinar.title} - Session {index + 1}
+                          </h4>
+                          <p className="text-sm text-muted-foreground mt-1 font-medium flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-primary/50"></span>
+                            Recorded on{" "}
+                            {new Date(recording.start_time).toLocaleDateString(
+                              undefined,
+                              {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              },
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             ) : (
@@ -287,6 +307,19 @@ const LiveWebinarView = ({
                 >
                   OBS Creds
                 </Button>
+
+                {/* <Button
+                  onClick={async () => {
+                    await channel.sendEvent({
+                      type: "start_live",
+                    });
+                  }}
+                  variant="outline"
+                  className="mr-2"
+                >
+                  Go Live
+                </Button> */}
+
                 <Button
                   onClick={handleToggleRecording}
                   variant={isRecording ? "destructive" : "secondary"}
@@ -365,7 +398,7 @@ const LiveWebinarView = ({
         <ObsDialogBox
           open={obsDialogBox}
           onOpenChange={setObsDialogBox}
-          rtmpURL={`rtmps://ingress.stream-io-video.com/443/${process.env.NEXT_PUBLIC_STREAM_API_KEY}.livestream.${webinar.id}`}
+          rtmpURL={`rtmps://ingress.stream-io-video.com:443/${process.env.NEXT_PUBLIC_STREAM_API_KEY}.livestream.${webinar.id}`}
           streamKey={userToken}
         />
       )}

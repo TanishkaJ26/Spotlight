@@ -20,7 +20,7 @@ type Props = {
 };
 
 const CTAStep = ({ stripeProducts }: Props) => {
-   console.log("stripeProducts 2:", stripeProducts);
+  console.log("stripeProducts 2:", stripeProducts);
   const {
     formData,
     updateCTAField,
@@ -115,19 +115,21 @@ const CTAStep = ({ stripeProducts }: Props) => {
 
       <div className="space-y-2 w-full">
         <Label>CTA Type</Label>
-        <Tabs defaultValue={CtaTypeEnum.BOOK_A_CALL} className="w-full">
+        <Tabs
+          value={ctaType}
+          onValueChange={handleSelectCTAType}
+          className="w-full"
+        >
           <TabsList className="w-full bg-transparent">
             <TabsTrigger
               value={CtaTypeEnum.BOOK_A_CALL}
               className="w-1/2 data-[state=active]:!bg-background/50 data-[state=active]:border data-[state=active]:border-input"
-              onClick={() => handleSelectCTAType(CtaTypeEnum.BOOK_A_CALL)}
             >
               Book a Call
             </TabsTrigger>
             <TabsTrigger
               value={CtaTypeEnum.BUY_NOW}
               className="w-1/2 data-[state=active]:!bg-background/50 data-[state=active]:border data-[state=active]:border-input"
-              onClick={() => handleSelectCTAType(CtaTypeEnum.BUY_NOW)}
             >
               Buy Now
             </TabsTrigger>
@@ -135,7 +137,12 @@ const CTAStep = ({ stripeProducts }: Props) => {
         </Tabs>
       </div>
       <div className="space-y-2">
-        <Label>Attach a Product</Label>
+        <Label className={errors.priceId ? "text-red-400" : ""}>
+          Attach a Product{" "}
+          {ctaType === CtaTypeEnum.BUY_NOW && (
+            <span className="text-red-400">*</span>
+          )}
+        </Label>
         <div className="relative">
           <div className="mb-2">
             <div className="relative">
@@ -147,8 +154,15 @@ const CTAStep = ({ stripeProducts }: Props) => {
             </div>
           </div>
           <Select value={priceId} onValueChange={handleProductChange}>
-            <SelectTrigger className="w-full !bg-background/50 border border-input">
-              <SelectValue placeholder="Select an product" />
+            <SelectTrigger
+              className={cn(
+                "w-full !bg-background/50 border",
+                errors.priceId
+                  ? "border-red-400 focus:ring-red-400"
+                  : "border-input",
+              )}
+            >
+              <SelectValue placeholder="Select a product" />
             </SelectTrigger>
             <SelectContent className="bg-background border border-input max-h-48">
               {stripeProducts?.length > 0 ? (
@@ -168,6 +182,9 @@ const CTAStep = ({ stripeProducts }: Props) => {
               )}
             </SelectContent>
           </Select>
+          {errors.priceId && (
+            <p className="text-sm text-red-400 mt-2">{errors.priceId}</p>
+          )}
         </div>
       </div>
     </div>
