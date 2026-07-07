@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import Sidebar from "@/components/ReusableComponent/LayoutComponents/Sidebar";
 import Header from "@/components/ReusableComponent/LayoutComponents/Header";
 import { getAllProductsFromStripe } from "@/actions/stripe";
+import { getAllAssistants } from "@/actions/vapi";
 
 type Props = {
   children: React.ReactNode;
@@ -18,6 +19,7 @@ const Layout = async ({ children }: Props) => {
   }
 
   const stripeProducts = await getAllProductsFromStripe();
+  const assistants = await getAllAssistants();
 
   return (
     <div className="flex w-full min-h-screen">
@@ -28,6 +30,7 @@ const Layout = async ({ children }: Props) => {
         <Header
           user={userExist.user}
           stripeProducts={stripeProducts.products || []}
+          assistants={assistants.data || []}
         />
         <div className="flex-1 py-10">{children}</div>
       </div>
