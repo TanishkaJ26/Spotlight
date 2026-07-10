@@ -1,10 +1,12 @@
 "use client";
 import { WebinarWithPresenter } from "@/lib/type";
 import "stream-chat-react/dist/css/v2/index.css";
+import "@stream-io/video-react-sdk/dist/css/styles.css";
 import {
   ParticipantView,
   useCallStateHooks,
   type Call,
+  StreamTheme,
 } from "@stream-io/video-react-sdk";
 import { Loader2, MessageSquare, Users, Video, StopCircle } from "lucide-react";
 import { StreamChat } from "stream-chat";
@@ -12,7 +14,6 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CtaTypeEnum } from "@prisma/client";
 import { Chat, Channel, MessageList, MessageInput } from "stream-chat-react";
-import "stream-chat-react/dist/css/v2/index.css";
 import { useTheme } from "next-themes";
 import CTADialogBox from "./CTADialogBox";
 import { toast } from "sonner";
@@ -221,12 +222,12 @@ const LiveWebinarView = ({
         <div className="flex-1 rounded-lg overflow-hidden border border-border flex flex-col bg-card">
           <div className="flex-1 relative overflow-hidden">
             {webinar.webinarStatus !== "ENDED" && hostParticipant ? (
-              <div className="w-full h-full">
+              <StreamTheme className="w-full h-full">
                 <ParticipantView
                   participant={hostParticipant}
                   className="w-full h-full object-cover !max-w-full"
                 />
-              </div>
+              </StreamTheme>
             ) : recordings.length > 0 ? (
               <div className="w-full h-full p-6 sm:p-10 overflow-y-auto flex flex-col gap-8 bg-gradient-to-b from-background to-muted/20">
                 <div className="flex flex-col gap-4">

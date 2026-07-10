@@ -2,7 +2,7 @@
 
 import { prismaClient } from "@/lib/prismaClient";
 import { AttendanceData } from "@/lib/type";
-import { AttendedTypeEnum, CtaTypeEnum } from "@prisma/client";
+import { AttendedTypeEnum, CallStatusEnum, CtaTypeEnum } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { getWebinarByPresenterId } from "./webinar";
 
@@ -256,6 +256,75 @@ export const changeAttendanceType = async (
       success: false,
       status: 500,
       message: "Failed to update attendance type",
+      error,
+    };
+  }
+};
+
+export const getAttendeeById = async (id: string, webinarId: string) => {
+  try {
+    const attendee = await prismaClient.attendee.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    const attendance = await prismaClient.attendance.findFirst({
+      where: {
+        attendeeId: id,
+        webinarId: webinarId,
+      },
+    });
+
+    if (!attendee || !attendance) {
+      return {
+        status: 404,
+        success: false,
+        message: "Attendee not found",
+      };
+    }
+
+    return {
+      status: 200,
+      success: true,
+      message: "Get attendee details successful",
+      data: attendee,
+    };
+  } catch (error) {
+    console.log("Error", error);
+    return {
+      status: 500,
+      success: false,
+      message: "Something went wrong!",
+    };
+  }
+};
+
+export const changeCallStatus = async (
+  attendeeId: string,
+  callStatus: CallStatusEnum,
+) => {
+  try {
+    const attendee = await prismaClient.attendee.update({
+      where: {
+        id: attendeeId,
+      },
+      data: {
+        callStatus: callStatus,
+      },
+    });
+    return {
+      success: true,
+      status: 200,
+      message: "Call status updated successfully",
+      data: attendee,
+    };
+  } catch (error) {
+    console.error("Error updating call status:", error);
+    return {
+      success: false,
+      status: 500,
+      message: "Failed to update call status",
       error,
     };
   }
