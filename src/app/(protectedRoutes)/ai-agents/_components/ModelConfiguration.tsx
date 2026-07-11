@@ -10,9 +10,7 @@ import { toast } from "sonner";
 import ConfigField from "./ConfigField";
 import DropdownSelect from "./DropdownSelect";
 
-type Props = {};
-
-const ModelConfiguration = (props: Props) => {
+const ModelConfiguration = () => {
   const { assistant } = useAiAgentStore();
   const [firstMessage, setFirstMessage] = useState("");
   const [systemPrompt, setSystemPrompt] = useState("");
