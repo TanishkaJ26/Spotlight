@@ -1,11 +1,11 @@
 "use server";
 
 import { aiAgentPrompt } from "@/lib/data";
-import { vapiServer } from "@/lib/vapi/vapiServer";
+import { getVapiServer } from "@/lib/vapi/vapiServer";
 
 export const getAllAssistants = async () => {
   try {
-    const getAllAgents = await vapiServer.assistants.list();
+    const getAllAgents = await getVapiServer().assistants.list();
     return {
       success: true,
       status: 200,
@@ -23,7 +23,7 @@ export const getAllAssistants = async () => {
 
 export const createAssistant = async (name: string) => {
   try {
-    const createAssistant = await vapiServer.assistants.create({
+    const createAssistant = await getVapiServer().assistants.create({
       name,
       firstMessage: `Hi there, this is ${name} from customer support, How can i help you today?`,
       model: {
@@ -59,7 +59,7 @@ export const updateAssistant = async (
   systemPrompt: string,
 ) => {
   try {
-    const updateAssistant = await vapiServer.assistants.update(assistantId, {
+    const updateAssistant = await getVapiServer().assistants.update(assistantId, {
       firstMessage: firstMessage,
       model: {
         model: "gpt-4o",

@@ -124,11 +124,17 @@ export const useWebinarStore = create<WebinarStore>((set, get) => ({
   updateBasicInfoField: (field, value) => {
     set((state) => {
       const newBasicInfo = { ...state.formData.basicInfo, [field]: value };
-      const validationResult = validateBasicInfo(newBasicInfo);
+      
+      // Clear the error for this field when the user types
+      const newErrors = { ...state.validation.basicInfo.errors };
+      delete newErrors[field as string];
 
       return {
         formData: { ...state.formData, basicInfo: newBasicInfo },
-        validation: { ...state.validation, basicInfo: validationResult },
+        validation: {
+          ...state.validation,
+          basicInfo: { ...state.validation.basicInfo, errors: newErrors },
+        },
       };
     });
   },
@@ -136,11 +142,16 @@ export const useWebinarStore = create<WebinarStore>((set, get) => ({
   updateCTAField: (field, value) => {
     set((state) => {
       const newCTA = { ...state.formData.cta, [field]: value };
-      const validationResult = validateCTA(newCTA);
+      
+      const newErrors = { ...state.validation.cta.errors };
+      delete newErrors[field as string];
 
       return {
         formData: { ...state.formData, cta: newCTA },
-        validation: { ...state.validation, cta: validationResult },
+        validation: {
+          ...state.validation,
+          cta: { ...state.validation.cta, errors: newErrors },
+        },
       };
     });
   },
@@ -151,7 +162,9 @@ export const useWebinarStore = create<WebinarStore>((set, get) => ({
         ...state.formData.additionalInfo,
         [field]: value,
       };
-      const validationResult = validateAdditionalInfo(newAdditionalInfo);
+      
+      const newErrors = { ...state.validation.additionalInfo.errors };
+      delete newErrors[field as string];
 
       return {
         formData: {
@@ -160,7 +173,7 @@ export const useWebinarStore = create<WebinarStore>((set, get) => ({
         },
         validation: {
           ...state.validation,
-          additionalInfo: validationResult,
+          additionalInfo: { ...state.validation.additionalInfo, errors: newErrors },
         },
       };
     });

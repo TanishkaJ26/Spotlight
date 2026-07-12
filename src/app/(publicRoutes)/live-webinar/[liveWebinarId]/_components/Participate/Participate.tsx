@@ -33,6 +33,8 @@ const Participate = ({ apiKey, webinar, callId }: Props) => {
 
   const clientInitialized = useRef<boolean>(false);
 
+  const [hasLeft, setHasLeft] = useState(false);
+
   useEffect(() => {
     if (clientInitialized.current) return;
     const initClient = async () => {
@@ -62,7 +64,6 @@ const Participate = ({ apiKey, webinar, callId }: Props) => {
           }
         });
 
-        // await streamClient.connectUser(user, userToken);
         const streamCall = streamClient.call("livestream", callId);
         
         await streamCall.join();
@@ -88,7 +89,10 @@ const Participate = ({ apiKey, webinar, callId }: Props) => {
         }
       }
     };
-    initClient();
+    
+    if (!hasLeft) {
+      initClient();
+    }
 
     return () => {
       const currentCall = call;
@@ -106,7 +110,35 @@ const Participate = ({ apiKey, webinar, callId }: Props) => {
           });
       }
     };
-  }, [apiKey, callId, attendee, call, client, webinar.id]);
+  }, [apiKey, callId, attendee, call, client, webinar.id, hasLeft]);
+
+  if (hasLeft) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-background text-foreground">
+        <div className="text-center max-w-md p-8 rounded-lg border border-border bg-card">
+          <h2 className="text-2xl font-bold mb-4">You have left the webinar</h2>
+          <p className="text-muted-foreground mb-6">
+            You can rejoin the webinar at any time while it is still live.
+          </p>
+          <div className="flex space-x-4 justify-center">
+            <Button
+              onClick={() => {
+                setHasLeft(false);
+                setClient(null);
+                setCall(null);
+              }}
+              className="bg-accent-primary hover:bg-accent-primary/90 text-accent-foreground"
+            >
+              Rejoin Webinar
+            </Button>
+            <Button variant="outline" onClick={() => window.location.href = "/"}>
+              Return to Home
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!attendee) {
     return (

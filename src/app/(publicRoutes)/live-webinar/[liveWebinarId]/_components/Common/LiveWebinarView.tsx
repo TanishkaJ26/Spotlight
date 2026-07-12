@@ -30,6 +30,7 @@ type Props = {
   userToken: string;
   call: Call;
   webinar: WebinarWithPresenter;
+  onLeave?: () => void;
 };
 
 const LiveWebinarView = ({
@@ -41,6 +42,7 @@ const LiveWebinarView = ({
   userToken,
   webinar,
   call,
+  onLeave,
 }: Props) => {
   const { useParticipantCount, useParticipants, useIsCallRecordingInProgress } =
     useCallStateHooks();
@@ -206,11 +208,15 @@ const LiveWebinarView = ({
           </div>
           <button
             onClick={() => setShowChat(!showChat)}
+            disabled={webinar.lockChat && !isHost}
             className={`px-3 py-1 rounded-full text-sm flex items-center space-x-1 ${
               showChat
                 ? "bg-accent-primary text-primary-foreground"
                 : "bg-muted/50"
+            } ${
+              webinar.lockChat && !isHost ? "opacity-50 cursor-not-allowed" : ""
             }`}
+            title={webinar.lockChat && !isHost ? "Chat is locked" : ""}
           >
             <MessageSquare size={16} />
             <span>Chat</span>
@@ -299,7 +305,7 @@ const LiveWebinarView = ({
               </div>
             </div>
 
-            {isHost && (
+            {isHost ? (
               <div className="flex items-center space-x-1">
                 <Button
                   onClick={() => setObsDialogBox(true)}
@@ -352,6 +358,15 @@ const LiveWebinarView = ({
                     : "Buy Now"}
                 </Button>
               </div>
+            ) : (
+              <div className="flex items-center space-x-1">
+                <Button
+                  onClick={() => onLeave ? onLeave() : router.push("/")}
+                  variant="destructive"
+                >
+                  Leave Webinar
+                </Button>
+              </div>
             )}
           </div>
         </div>
@@ -376,9 +391,15 @@ const LiveWebinarView = ({
                   </div>
 
                   <MessageList />
-                  <div className="p-2 border-t border-border">
-                    <MessageInput />
-                  </div>
+                  {(!webinar.lockChat || isHost) ? (
+                    <div className="p-2 border-t border-border">
+                      <MessageInput />
+                    </div>
+                  ) : (
+                    <div className="p-4 border-t border-border text-center text-sm text-muted-foreground bg-muted/20">
+                      Chat is locked by the host
+                    </div>
+                  )}
                 </div>
               </Channel>
             </Chat>

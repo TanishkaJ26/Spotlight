@@ -1,11 +1,11 @@
-import React from 'react';
+import React from "react";
 
 type SpotlightProps = {
   className?: string;
   size?: number;
 };
 
-const Spotlight = ({ className = 'text-white', size = 24 }: SpotlightProps) => {
+const Spotlight = ({ className = "text-white", size = 24 }: SpotlightProps) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

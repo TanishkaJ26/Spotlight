@@ -5,10 +5,12 @@ import {
   LucideAlertCircle,
   LucideArrowRight,
   LucideCheckCircle2,
+  LogOut,
 } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import React from "react";
+import { SignOutButton } from "@clerk/nextjs";
 
 type Props = {};
 
@@ -22,16 +24,16 @@ const page = async (props: Props) => {
 
   const stripeLink = getStripeOAuthLink(
     "api/stripe-connect",
-    userExist.user.id
-  )
-  
+    userExist.user.id,
+  );
+
   return (
     <div className="w-full mx-auto py-8 px-4">
       <h1 className="text-2xl font-bold mb-6">Payment Integration</h1>
       <div className="w-full p-6 border border-input rounded-lg bg-background shadow-sm">
         <div className="flex items-center mb-4">
           <div className="h-10 w-10 rounded-full bg-gradient-to-r from-purple-500 to-indigo-600 flex items-center justify-center mr-4">
-            <StarIcon className="w-6 h-6" />
+            <StarIcon className="w-6 h-6 text-white" />
           </div>
           <div>
             <h2 className="text-xl font-semibold text-primary">
@@ -42,7 +44,7 @@ const page = async (props: Props) => {
             </p>
           </div>
         </div>
-        <div className="my-6 p-4 bg-muted rounded-md">
+        <div className="my-6 p-4 bg-muted rounded-md border border-border/50">
           <div className="flex items-start">
             {isConnected ? (
               <LucideCheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" />
@@ -75,8 +77,8 @@ const page = async (props: Props) => {
             href={stripeLink}
             className={`px-5 py-2.5 rounded-md font-medium text-sm flex items-center gap-2 transition-colors ${
               isConnected
-                ? "bg-muted hover:bg-muted/80 text-foreground"
-                : "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
+                ? "bg-muted hover:bg-muted/80 text-foreground border border-border"
+                : "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-md shadow-purple-500/20"
             }`}
           >
             {isConnected ? "Reconnect" : "Connect with Stripe"}
@@ -91,19 +93,19 @@ const page = async (props: Props) => {
             </h3>
             <ul className="text-sm text-muted-foreground space-y-2">
               <li className="flex items-center gap-2">
-                <div className="h-4 w-4 rounded-full bg-green-100 flex items-center justify-center">
+                <div className="h-4 w-4 rounded-full bg-green-500/20 flex items-center justify-center">
                   <div className="h-1.5 w-1.5 rounded-full bg-green-500"></div>
                 </div>
                 Process payments securely from customers worldwide
               </li>
               <li className="flex items-center gap-2">
-                <div className="h-4 w-4 rounded-full bg-green-100 flex items-center justify-center">
+                <div className="h-4 w-4 rounded-full bg-green-500/20 flex items-center justify-center">
                   <div className="h-1.5 w-1.5 rounded-full bg-green-500"></div>
                 </div>
                 Manage subscriptions and recurring billing
               </li>
               <li className="flex items-center gap-2">
-                <div className="h-4 w-4 rounded-full bg-green-100 flex items-center justify-center">
+                <div className="h-4 w-4 rounded-full bg-green-500/20 flex items-center justify-center">
                   <div className="h-1.5 w-1.5 rounded-full bg-green-500"></div>
                 </div>
                 Access detailed financial reporting and analytics
@@ -111,6 +113,40 @@ const page = async (props: Props) => {
             </ul>
           </div>
         )}
+      </div>
+
+      {/* Account Settings */}
+      <div className="w-full p-6 border border-red-500/20 rounded-lg bg-background shadow-sm relative overflow-hidden mt-6">
+        {/* Subtle red glow in the background */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/5 rounded-full blur-[80px] pointer-events-none" />
+
+        <div className="flex items-center mb-6 relative z-10">
+          <div className="h-10 w-10 rounded-full bg-red-500/10 flex items-center justify-center mr-4 border border-red-500/20">
+            <LogOut className="w-5 h-5 text-red-500" />
+          </div>
+          <div>
+            <h2 className="text-xl font-semibold text-primary">
+              Account Session
+            </h2>
+            <p className="text-muted-foreground text-sm">
+              Manage your active session on this device
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-border relative z-10">
+          <div className="text-sm text-muted-foreground">
+            Sign out of your account securely. You will need to log in again to
+            access the dashboard.
+          </div>
+
+          <SignOutButton>
+            <button className="px-5 py-2.5 rounded-md font-medium text-sm flex items-center gap-2 transition-all bg-red-500/10 hover:bg-red-500 hover:text-white text-red-500 border border-red-500/20 shadow-sm cursor-pointer">
+              <LogOut size={16} />
+              Sign Out
+            </button>
+          </SignOutButton>
+        </div>
       </div>
     </div>
   );
