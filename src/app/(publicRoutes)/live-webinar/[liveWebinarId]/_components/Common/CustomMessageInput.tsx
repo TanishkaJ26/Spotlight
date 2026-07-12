@@ -13,7 +13,7 @@ export const CustomMessageInput = () => {
       <div className="flex-1 flex items-center bg-muted rounded-full px-3 h-9 focus-within:ring-1 focus-within:ring-primary/50 min-w-0">
         <input
           value={text}
-          onChange={handleChange}
+          onChange={(e) => handleChange(e as any)}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
