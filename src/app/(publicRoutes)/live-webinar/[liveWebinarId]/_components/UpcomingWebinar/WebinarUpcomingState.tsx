@@ -26,9 +26,13 @@ const WebinarUpcomingState = ({ webinar, currentUser }: Props) => {
   React.useEffect(() => {
     // Only poll if the current user is NOT the presenter
     if (currentUser?.id === webinar.presenterId) return;
-    
+
     // Only poll if we are waiting for the webinar to start
-    if (webinar.webinarStatus !== "SCHEDULED" && webinar.webinarStatus !== "WAITING_ROOM") return;
+    if (
+      webinar.webinarStatus !== "SCHEDULED" &&
+      webinar.webinarStatus !== "WAITING_ROOM"
+    )
+      return;
 
     // Only automatically join if they have an attendee record (joined the waitlist)
     if (!attendee) return;
@@ -46,7 +50,14 @@ const WebinarUpcomingState = ({ webinar, currentUser }: Props) => {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [currentUser?.id, webinar.presenterId, webinar.id, webinar.webinarStatus, attendee, router]);
+  }, [
+    currentUser?.id,
+    webinar.presenterId,
+    webinar.id,
+    webinar.webinarStatus,
+    attendee,
+    router,
+  ]);
 
   const handleStartWebinar = async () => {
     setLoading(true);

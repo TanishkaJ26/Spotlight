@@ -122,6 +122,7 @@ const getWebinarAttendance = async (
             callStatus: attendance.user.callStatus,
             createdAt: attendance.user.createdAt,
             updatedAt: attendance.user.updatedAt,
+            phone: attendance.user.phone || "",
           }));
         }
       }
@@ -149,10 +150,12 @@ export const registerAttendee = async ({
   webinarId,
   email,
   name,
+  phone,
 }: {
   webinarId: string;
   email: string;
   name: string;
+  phone?: string;
 }) => {
   try {
     if (!webinarId || !email) {
@@ -175,7 +178,7 @@ export const registerAttendee = async ({
 
     if (!attendee) {
       attendee = await prismaClient.attendee.create({
-        data: { email, name },
+        data: { email, name, phone },
       });
     }
 

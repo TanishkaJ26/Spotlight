@@ -29,6 +29,7 @@ const WaitListComponent = ({
 }: Props) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -56,6 +57,7 @@ const WaitListComponent = ({
       const res = await registerAttendee({
         email,
         name,
+        phone,
         webinarId,
       });
 
@@ -74,6 +76,7 @@ const WaitListComponent = ({
       );
       setEmail("");
       setName("");
+      setPhone("");
       setSubmitted(true);
 
       setTimeout(() => {
@@ -134,6 +137,12 @@ const WaitListComponent = ({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+              />
+              <Input
+                type="tel"
+                placeholder="Your Phone Number"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
               />
             </React.Fragment>
           )}

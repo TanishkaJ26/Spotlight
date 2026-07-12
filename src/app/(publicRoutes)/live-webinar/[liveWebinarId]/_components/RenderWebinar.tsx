@@ -141,3 +141,4 @@ const RenderWebinar = ({ error, user, webinar, apiKey, recording }: Props) => {
 };
 
 export default RenderWebinar;
+

@@ -8,7 +8,21 @@ import {
   type Call,
   StreamTheme,
 } from "@stream-io/video-react-sdk";
-import { Loader2, MessageSquare, Users, Video, StopCircle } from "lucide-react";
+import {
+  Loader2,
+  MessageSquare,
+  Users,
+  Video,
+  StopCircle,
+  Mic,
+  MicOff,
+  VideoOff,
+  Key,
+  PhoneOff,
+  Calendar,
+  ShoppingCart,
+  CircleDot,
+} from "lucide-react";
 import { StreamChat } from "stream-chat";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -17,9 +31,16 @@ import { Chat, Channel, MessageList, MessageInput } from "stream-chat-react";
 import { useTheme } from "next-themes";
 import CTADialogBox from "./CTADialogBox";
 import { toast } from "sonner";
+import { CustomMessageInput } from "./CustomMessageInput";
 import { changeWebinarStatus } from "@/actions/webinar";
 import { useRouter } from "next/navigation";
 import ObsDialogBox from "./ObsDialogBox";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type Props = {
   showChat: boolean;
@@ -44,22 +65,48 @@ const LiveWebinarView = ({
   call,
   onLeave,
 }: Props) => {
-  const { useParticipantCount, useParticipants, useIsCallRecordingInProgress } =
-    useCallStateHooks();
+  const {
+    useParticipantCount,
+    useParticipants,
+    useIsCallRecordingInProgress,
+    useMicrophoneState,
+    useCameraState,
+    useLocalParticipant,
+  } = useCallStateHooks();
   const participants = useParticipants();
+  const localParticipant = useLocalParticipant();
   const viewerCount = useParticipantCount();
   const isRecording = useIsCallRecordingInProgress();
+  const { microphone, optimisticIsMute: isMicMuted } = useMicrophoneState();
+  const { camera, optimisticIsMute: isCameraMuted } = useCameraState();
   const [chatClient, setChatClient] = useState<StreamChat | null>(null);
   const [channel, setChannel] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [isSwapped, setIsSwapped] = useState(false);
   const { resolvedTheme } = useTheme();
   const presenterParticipants = participants.filter(
     (p) => p.userId === webinar.presenter.id,
   );
+
+  const activePresenters = presenterParticipants.filter(
+    (p) => p.publishedTracks && p.publishedTracks.length > 0,
+  );
+
+  const primaryPresenter = activePresenters[0];
+  const secondaryPresenter = activePresenters[1];
+
+  const canSwap = !!secondaryPresenter;
+  const actualIsSwapped = isSwapped && canSwap;
+
+  const mainParticipant = actualIsSwapped
+    ? secondaryPresenter
+    : primaryPresenter;
+  const pipParticipant = actualIsSwapped
+    ? primaryPresenter
+    : secondaryPresenter;
+
   const hostParticipant =
-    presenterParticipants.find(
-      (p) => p.publishedTracks && p.publishedTracks.length > 0,
-    ) ||
+    mainParticipant ||
     presenterParticipants[0] ||
     (participants.length > 0 ? participants[0] : null);
   const [loading, setLoading] = useState(false);
@@ -67,6 +114,35 @@ const LiveWebinarView = ({
   const [fetchingRecordings, setFetchingRecordings] = useState(false);
   const router = useRouter();
   const [obsDialogBox, setObsDialogBox] = useState(false);
+  const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
+
+  useEffect(() => {
+    if (showChat) {
+      setHasUnreadMessages(false);
+    }
+  }, [showChat]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setShowChat(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!channel) return;
+
+    const handleNewMessage = (event: any) => {
+      if (event.type === "message.new" && !showChat) {
+        setHasUnreadMessages(true);
+      }
+    };
+
+    channel.on("message.new", handleNewMessage);
+    return () => {
+      channel.off("message.new", handleNewMessage);
+    };
+  }, [channel, showChat]);
 
   const handleEndStream = async () => {
     setLoading(true);
@@ -153,23 +229,8 @@ const LiveWebinarView = ({
     };
   }, [chatClient, channel]);
 
-  //FETCH RECORDINGS
-  useEffect(() => {
-    const fetchRecordings = async () => {
-      setFetchingRecordings(true);
-      try {
-        const response = await call.queryRecordings();
-        setRecordings(response.recordings);
-      } catch (error) {
-        console.error("Error fetching recordings", error);
-      } finally {
-        setFetchingRecordings(false);
-      }
-    };
-    if (call) {
-      fetchRecordings();
-    }
-  }, [call]);
+  // FETCH RECORDINGS
+  // Client-side queryRecordings fails due to token permissions. Recordings are handled server-side in page.tsx when webinar ends.
 
   const handleToggleRecording = async () => {
     try {
@@ -183,6 +244,24 @@ const LiveWebinarView = ({
     } catch (error) {
       console.error("Error toggling recording:", error);
       toast.error("Failed to toggle recording");
+    }
+  };
+
+  const handleToggleMic = async () => {
+    try {
+      await microphone.toggle();
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to toggle microphone");
+    }
+  };
+
+  const handleToggleCamera = async () => {
+    try {
+      await camera.toggle();
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to toggle camera");
     }
   };
 
@@ -209,7 +288,7 @@ const LiveWebinarView = ({
           <button
             onClick={() => setShowChat(!showChat)}
             disabled={webinar.lockChat && !isHost}
-            className={`px-3 py-1 rounded-full text-sm flex items-center space-x-1 ${
+            className={`px-3 py-1 rounded-full text-sm flex items-center space-x-1 relative ${
               showChat
                 ? "bg-accent-primary text-primary-foreground"
                 : "bg-muted/50"
@@ -220,19 +299,43 @@ const LiveWebinarView = ({
           >
             <MessageSquare size={16} />
             <span>Chat</span>
+            {!showChat && hasUnreadMessages && (
+              <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-destructive"></span>
+              </span>
+            )}
           </button>
         </div>
       </div>
 
-      <div className="flex flex-1 p-2 gap-2 overflow-hidden">
+      <div className="flex flex-col md:flex-row flex-1 p-2 gap-2 overflow-hidden">
         <div className="flex-1 rounded-lg overflow-hidden border border-border flex flex-col bg-card">
           <div className="flex-1 relative overflow-hidden">
             {webinar.webinarStatus !== "ENDED" && hostParticipant ? (
-              <StreamTheme className="w-full h-full">
+              <StreamTheme className="w-full h-full relative">
                 <ParticipantView
                   participant={hostParticipant}
-                  className="w-full h-full object-cover !max-w-full"
+                  className="w-full h-full [&_video]:!object-contain !max-w-full bg-black"
                 />
+
+                {/* PIP for secondary video (e.g. host webcam or OBS) */}
+                {pipParticipant && (
+                  <div
+                    onClick={() => canSwap && setIsSwapped(!isSwapped)}
+                    className={`absolute bottom-2 right-2 sm:bottom-4 sm:right-4 w-32 sm:w-64 aspect-video rounded-lg overflow-hidden border-2 border-primary/50 shadow-xl z-10 bg-background/80 backdrop-blur-sm ${
+                      canSwap
+                        ? "cursor-pointer hover:border-primary transition-colors"
+                        : ""
+                    }`}
+                    title={canSwap ? "Click to swap views" : ""}
+                  >
+                    <ParticipantView
+                      participant={pipParticipant}
+                      className="w-full h-full object-cover pointer-events-none"
+                    />
+                  </div>
+                )}
               </StreamTheme>
             ) : recordings.length > 0 ? (
               <div className="w-full h-full p-6 sm:p-10 overflow-y-auto flex flex-col gap-8 bg-gradient-to-b from-background to-muted/20">
@@ -298,70 +401,147 @@ const LiveWebinarView = ({
             )}
           </div>
 
-          <div className="p-2 border-t border-border flex items-center justify-between py-2">
-            <div className="flex items-center space-x-2">
-              <div className="text-sm font-medium capitalize">
+          <div className="p-2 border-t border-border flex flex-col sm:flex-row items-center justify-between py-2 gap-2 sm:gap-0">
+            <div className="flex items-center space-x-2 w-full sm:w-auto justify-center sm:justify-start overflow-hidden">
+              <div className="text-sm font-medium capitalize truncate">
                 {webinar?.title}
               </div>
             </div>
 
             {isHost ? (
-              <div className="flex items-center space-x-1">
-                <Button
-                  onClick={() => setObsDialogBox(true)}
-                  variant="outline"
-                  className="mr-2"
-                >
-                  OBS Creds
-                </Button>
+              <TooltipProvider>
+                <div className="flex items-center justify-center flex-wrap gap-1 sm:gap-2">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        onClick={handleToggleMic}
+                        variant={isMicMuted ? "destructive" : "secondary"}
+                        size="icon"
+                        className="rounded-full h-10 w-10"
+                      >
+                        {isMicMuted ? (
+                          <MicOff className="h-4 w-4" />
+                        ) : (
+                          <Mic className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>
+                        {isMicMuted ? "Unmute Microphone" : "Mute Microphone"}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
 
-                {/* <Button
-                  onClick={async () => {
-                    await channel.sendEvent({
-                      type: "start_live",
-                    });
-                  }}
-                  variant="outline"
-                  className="mr-2"
-                >
-                  Go Live
-                </Button> */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        onClick={handleToggleCamera}
+                        variant={isCameraMuted ? "destructive" : "secondary"}
+                        size="icon"
+                        className="rounded-full h-10 w-10"
+                      >
+                        {isCameraMuted ? (
+                          <VideoOff className="h-4 w-4" />
+                        ) : (
+                          <Video className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>
+                        {isCameraMuted ? "Turn on Camera" : "Turn off Camera"}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
 
-                <Button
-                  onClick={handleToggleRecording}
-                  variant={isRecording ? "destructive" : "secondary"}
-                >
-                  {isRecording ? (
-                    <StopCircle className="mr-2 h-4 w-4" />
-                  ) : (
-                    <Video className="mr-2 h-4 w-4" />
-                  )}
-                  {isRecording ? "Stop Recording" : "Start Recording"}
-                </Button>
-                <Button
-                  onClick={handleEndStream}
-                  disabled={loading}
-                  variant="destructive"
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="animate-spin mr-2 h-4 w-4" />
-                      Ending...
-                    </>
-                  ) : (
-                    "End Stream"
-                  )}
-                </Button>
-                <Button onClick={handleCTAButtonClick}>
-                  {webinar.ctaType === CtaTypeEnum.BOOK_A_CALL
-                    ? "Book a Call"
-                    : "Buy Now"}
-                </Button>
-              </div>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        onClick={() => setObsDialogBox(true)}
+                        variant="secondary"
+                        size="icon"
+                        className="rounded-full h-10 w-10"
+                      >
+                        <Key className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>OBS Credentials</p>
+                    </TooltipContent>
+                  </Tooltip>
+
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        onClick={handleToggleRecording}
+                        variant={isRecording ? "destructive" : "secondary"}
+                        size="icon"
+                        className="rounded-full h-10 w-10"
+                      >
+                        {isRecording ? (
+                          <StopCircle className="h-4 w-4" />
+                        ) : (
+                          <CircleDot className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>
+                        {isRecording ? "Stop Recording" : "Start Recording"}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        onClick={handleEndStream}
+                        disabled={loading}
+                        variant="destructive"
+                        size="icon"
+                        className="rounded-full h-10 w-10"
+                      >
+                        {loading ? (
+                          <Loader2 className="animate-spin h-4 w-4" />
+                        ) : (
+                          <PhoneOff className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>End Stream</p>
+                    </TooltipContent>
+                  </Tooltip>
+
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        onClick={handleCTAButtonClick}
+                        size="icon"
+                        className="rounded-full h-10 w-10 bg-white text-black hover:bg-gray-200"
+                      >
+                        {webinar.ctaType === CtaTypeEnum.BOOK_A_CALL ? (
+                          <Calendar className="h-4 w-4" />
+                        ) : (
+                          <ShoppingCart className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>
+                        {webinar.ctaType === CtaTypeEnum.BOOK_A_CALL
+                          ? "Push Call To Action"
+                          : "Push Buy Now To Action"}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+              </TooltipProvider>
             ) : (
               <div className="flex items-center space-x-1">
                 <Button
-                  onClick={() => onLeave ? onLeave() : router.push("/")}
+                  onClick={() => (onLeave ? onLeave() : router.push("/"))}
                   variant="destructive"
                 >
                   Leave Webinar
@@ -372,7 +552,7 @@ const LiveWebinarView = ({
         </div>
 
         {showChat && chatClient && (
-          <div data-theme={resolvedTheme} className="h-full">
+          <div data-theme={resolvedTheme} className="flex-1 md:flex-none md:w-72 h-full overflow-hidden">
             <Chat
               client={chatClient}
               theme={
@@ -382,7 +562,7 @@ const LiveWebinarView = ({
               }
             >
               <Channel channel={channel}>
-                <div className="w-72 bg-card border border-border rounded-lg overflow-hidden flex flex-col h-full">
+                <div className="w-full h-full bg-card border border-border rounded-lg overflow-hidden flex flex-col">
                   <div className="py-2 px-3 border-b border-border font-medium flex items-center justify-between">
                     <span>Chat</span>
                     <span className="text-xs bg-muted px-2 py-0.5 rounded-full">
@@ -391,12 +571,12 @@ const LiveWebinarView = ({
                   </div>
 
                   <MessageList />
-                  {(!webinar.lockChat || isHost) ? (
-                    <div className="p-2 border-t border-border">
-                      <MessageInput />
+                  {!webinar.lockChat || isHost ? (
+                    <div className="bg-[#18181B] border-t border-border/10">
+                      <MessageInput Input={CustomMessageInput} />
                     </div>
                   ) : (
-                    <div className="p-4 border-t border-border text-center text-sm text-muted-foreground bg-muted/20">
+                    <div className="p-4 border-t border-border/10 text-center text-sm text-muted-foreground bg-[#18181B]">
                       Chat is locked by the host
                     </div>
                   )}

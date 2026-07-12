@@ -65,7 +65,7 @@ const Participate = ({ apiKey, webinar, callId }: Props) => {
         });
 
         const streamCall = streamClient.call("livestream", callId);
-        
+
         await streamCall.join();
 
         setClient(streamClient);
@@ -89,7 +89,7 @@ const Participate = ({ apiKey, webinar, callId }: Props) => {
         }
       }
     };
-    
+
     if (!hasLeft) {
       initClient();
     }
@@ -131,7 +131,10 @@ const Participate = ({ apiKey, webinar, callId }: Props) => {
             >
               Rejoin Webinar
             </Button>
-            <Button variant="outline" onClick={() => window.location.href = "/"}>
+            <Button
+              variant="outline"
+              onClick={() => (window.location.href = "/")}
+            >
               Return to Home
             </Button>
           </div>
