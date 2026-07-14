@@ -24,7 +24,7 @@ const Layout = async ({ children }: Props) => {
   return (
     <div className="flex w-full min-h-screen">
       {/* SIDEBAR */}
-      <Sidebar />
+      <Sidebar className="hidden sm:flex" />
       <div className="flex flex-col w-full h-screen overflow-auto px-4 scrollbar-hide container mx-auto">
         {/* HEADER */}
         <Header
@@ -32,7 +32,7 @@ const Layout = async ({ children }: Props) => {
           stripeProducts={stripeProducts.products || []}
           assistants={assistants.data || []}
         />
-        <div className="flex-1 py-10">{children}</div>
+        <div className="flex-1 pt-0 pb-4 sm:py-10">{children}</div>
       </div>
     </div>
   );

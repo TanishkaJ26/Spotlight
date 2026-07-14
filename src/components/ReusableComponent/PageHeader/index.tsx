@@ -23,7 +23,7 @@ const PageHeader = ({
   return (
     <div className="w-full flex flex-col gap-8">
       <div className="w-full flex justify-center sm:justify-between items-center gap-8 flex-wrap">
-        <p className="text-primary text-4xl font-semibold">{heading}</p>
+        <p className="text-primary text-2xl sm:text-4xl font-semibold text-center sm:text-left">{heading}</p>
         <div className="relative md:mr-28">
           <PurpleIcon className="absolute -left-4 -top-3 -z-10 -rotate-45 py-3">
             {leftIcon}

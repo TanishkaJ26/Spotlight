@@ -1,6 +1,8 @@
+// Force HMR reload
 "use client";
 import { usePathname } from "next/navigation";
 import React from "react";
+import { cn } from "@/lib/utils";
 import Spotlight from "@/icons/Spotlight";
 import { sidebarData } from "@/lib/data";
 import {
@@ -12,28 +14,33 @@ import {
 import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
 
-type Props = {};
+type Props = {
+  className?: string;
+};
 
-const Sidebar = (props: Props) => {
+const Sidebar = ({ className }: Props) => {
   const pathName = usePathname();
   return (
-    <div className="w-18 sm:w-28 h-screen sticky top-0 py-10 px-2 sm:px-6 border bg-background border-border flex flex-col items-center justify-start gap-10">
+    <div className={cn("w-fit min-w-[64px] h-screen sticky top-0 py-10 pl-6 pr-4 sm:px-4 border bg-background border-border flex-col items-start sm:items-center justify-start gap-10", className)}>
       <div>
         <Spotlight />
       </div>
-      <div className="w-full h-full justify-between items-center flex flex-col">
-        <div className="w-full h-fit flex flex-col gap-4 items-center justify-center">
+      <div className="w-full h-full justify-between items-start sm:items-center flex flex-col">
+        <div className="w-full h-fit flex flex-col gap-4 items-start sm:items-center justify-center">
           {sidebarData.map((item) => (
             <TooltipProvider key={item.id}>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Link
                     href={item.link}
-                    className={`flex items-center gap-2 cursor-pointer rounded-lg p-2 ${pathName.includes(item.link) ? "iconBackground" : " "}`}
+                    className={`flex items-center gap-3 cursor-pointer rounded-lg p-2 w-full ${pathName.includes(item.link) ? "iconBackground" : " "}`}
                   >
                     <item.icon
-                      className={`w-4 h-4 ${pathName.includes(item.link) ? " " : "opacity-80"}`}
+                      className={`w-4 h-4 shrink-0 ${pathName.includes(item.link) ? " " : "opacity-80"}`}
                     />
+                    <span className="sm:hidden font-medium text-sm whitespace-nowrap pr-2">
+                      {item.title}
+                    </span>
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent side="right">

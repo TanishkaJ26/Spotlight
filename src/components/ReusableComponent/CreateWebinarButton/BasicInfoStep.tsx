@@ -177,14 +177,14 @@ const BasicInfoStep = (props: Props) => {
         </div>
       </div>
 
-      <div className="flex items-center gap-2 text-sm text-gray-400 mt-4">
+      <div className="flex flex-col md:flex-row items-start md:items-center gap-4 text-sm text-gray-400 mt-4">
         <div className="flex items-center">
           <Upload className="h-4 w-4 mr-2" />
           Uploading a video makes this webinar pre-recorded.
         </div>
         <Button
         variant="outline"
-        className="ml-auto relative border border-input hover:bg-background">
+        className="md:ml-auto w-full md:w-auto relative border border-input hover:bg-background">
           Upload File<Input
           className="absolute inset-0 opacity-0 cursor-pointer"
           type="file" />
@@ -211,7 +211,7 @@ const BasicInfoStep = (props: Props) => {
             </Button>
           </div>
         ) : (
-          <div className="flex items-center justify-between border border-input rounded-md p-4 bg-background/50">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-input rounded-md p-4 bg-background/50">
             <div className="flex items-center text-sm text-gray-400">
               <Upload className="h-4 w-4 mr-2" />
               Upload an image to display on the waitlist page.

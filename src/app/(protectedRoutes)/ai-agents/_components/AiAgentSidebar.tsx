@@ -14,9 +14,16 @@ type Props = {
 
 const AiAgentSidebar = ({ aiAgents }: Props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showMobileList, setShowMobileList] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const { assistant, setAssistant } = useAiAgentStore();
+  
+  const filteredAgents = aiAgents.filter(agent => 
+    (agent.name || "").toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <div className="w-[300px] border-r border-border flex flex-col">
+    <div className="w-full md:w-[300px] border-b md:border-b-0 md:border-r border-border flex flex-col shrink-0">
       <div className="p-4">
         <Button
           className="w-full flex items-center gap-2 mb-4 hover:cursor-pointer"
@@ -26,14 +33,18 @@ const AiAgentSidebar = ({ aiAgents }: Props) => {
         </Button>
         <div className="relative">
           <Input
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search Assistant"
             className="bg-neutral-900 border-neutral-700 pl-10"
+            onFocus={() => setShowMobileList(true)}
+            onBlur={() => setTimeout(() => setShowMobileList(false), 200)}
           />
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-neutral-400" />
         </div>
       </div>
-      <ScrollArea className="mt-4 overflow-auto">
-        {aiAgents.map((aiAssistant) => (
+      <ScrollArea className={`mt-0 md:mt-4 overflow-auto max-h-[30vh] md:max-h-full ${showMobileList ? 'block' : 'hidden md:block'}`}>
+        {filteredAgents.map((aiAssistant) => (
           <div
             className={`p-4 ${
               aiAssistant.id === assistant?.id ? "bg-primary/10" : ""
@@ -41,6 +52,8 @@ const AiAgentSidebar = ({ aiAgents }: Props) => {
             key={aiAssistant.id}
             onClick={() => {
               setAssistant(aiAssistant);
+              setSearchQuery(aiAssistant.name || "");
+              setShowMobileList(false);
             }}
           >
             <div className="font-medium">{aiAssistant.name}</div>

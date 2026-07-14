@@ -36,7 +36,12 @@ const Participate = ({ apiKey, webinar, callId }: Props) => {
   const [hasLeft, setHasLeft] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
+    let activeClient: StreamVideoClient | null = null;
+    let activeCall: Call | null = null;
+
     if (clientInitialized.current) return;
+    
     const initClient = async () => {
       try {
         setConnectionStatus("connecting");
@@ -66,7 +71,15 @@ const Participate = ({ apiKey, webinar, callId }: Props) => {
 
         const streamCall = streamClient.call("livestream", callId);
 
+        activeClient = streamClient;
+        activeCall = streamCall;
+
         await streamCall.join();
+
+        if (!isMounted) {
+          streamCall.leave().then(() => streamClient.disconnectUser());
+          return;
+        }
 
         setClient(streamClient);
         setCall(streamCall);
@@ -74,6 +87,7 @@ const Participate = ({ apiKey, webinar, callId }: Props) => {
         clientInitialized.current = true;
       } catch (error: any) {
         console.error("Error initializing client or joining call:", error);
+        if (!isMounted) return;
         setConnectionStatus("failed");
 
         if (error?.message?.includes("JoinBackstage")) {
@@ -95,14 +109,13 @@ const Participate = ({ apiKey, webinar, callId }: Props) => {
     }
 
     return () => {
-      const currentCall = call;
-      const currentClient = client;
-      if (currentCall && currentClient) {
-        currentCall
+      isMounted = false;
+      if (activeCall && activeClient) {
+        activeCall
           .leave()
           .then(() => {
             console.log("Left the call");
-            currentClient.disconnectUser();
+            activeClient?.disconnectUser();
             clientInitialized.current = false;
           })
           .catch((error) => {
@@ -110,7 +123,7 @@ const Participate = ({ apiKey, webinar, callId }: Props) => {
           });
       }
     };
-  }, [apiKey, callId, attendee, call, client, webinar.id, hasLeft]);
+  }, [apiKey, callId, attendee, webinar.id, hasLeft]);
 
   if (hasLeft) {
     return (

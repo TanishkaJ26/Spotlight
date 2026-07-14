@@ -20,7 +20,14 @@ const LiveStreamState = ({ apiKey, callId, webinar, user }: Props) => {
   const [hostToken, setHostToken] = useState<string | null>(null);
   const [client, setClient] = useState<StreamVideoClient | null>(null);
 
+  const clientInitialized = React.useRef(false);
+
   useEffect(() => {
+    let isMounted = true;
+    if (clientInitialized.current) return;
+
+    let activeClient: StreamVideoClient | null = null;
+
     const init = async () => {
       try {
         const token = await getTokenForHost(
@@ -40,13 +47,30 @@ const LiveStreamState = ({ apiKey, callId, webinar, user }: Props) => {
           user: hostUser,
           token,
         });
+        
+        activeClient = streamClient;
+
+        if (!isMounted) {
+          streamClient.disconnectUser();
+          return;
+        }
+
         setHostToken(token);
         setClient(streamClient);
+        clientInitialized.current = true;
       } catch (error) {
         console.error("Error initializing Stream client:", error);
       }
     };
     init();
+
+    return () => {
+      isMounted = false;
+      if (activeClient) {
+        activeClient.disconnectUser();
+        clientInitialized.current = false;
+      }
+    };
   }, [apiKey, webinar]);
 
   if (!client || !hostToken) return null;

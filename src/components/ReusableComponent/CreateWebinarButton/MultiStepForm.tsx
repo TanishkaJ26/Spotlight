@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Check from "@/icons/Check";
 import { Separator } from "@/components/ui/separator";
-import { AlertCircle, ChevronRight, Loader2 } from "lucide-react";
+import { AlertCircle, ChevronRight, Loader2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { createWebinar } from "@/actions/webinar";
@@ -81,9 +81,9 @@ const MultiStepForm = ({ steps, onComplete }: Props) => {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center bg-[#27272A]/20 border border-border rounded-2xl overflow-hidden w-full mx-auto backdrop-blur-[160px]">
-      <div className="flex items-center justify-start w-full">
-        <div className="w-full md:w-1/3 p-6">
+    <div className="flex flex-col justify-center items-center bg-[#27272A]/20 border border-border rounded-2xl overflow-y-auto max-h-full w-full mx-auto backdrop-blur-[160px] relative scrollbar-hide">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-start w-full">
+        <div className="hidden md:block w-full md:w-1/3 p-6">
           <div className="space-y-6">
             {steps.map((step, index) => {
               const isCompleted = completedSteps.includes(step.id);
@@ -177,7 +177,7 @@ const MultiStepForm = ({ steps, onComplete }: Props) => {
         />
         <Separator
           orientation="horizontal"
-          className="md:hidden h-px w-full my-4 bg-gray-700/50"
+          className="hidden h-px w-full my-4 bg-gray-700/50"
         />
         <div className="w-full md:w-2/3">
           <AnimatePresence mode="wait">

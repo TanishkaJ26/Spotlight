@@ -65,16 +65,16 @@ const CreateWebinarButton = ({ stripeProducts, assistants }: Props) => {
     <Dialog open={isModalOpen} onOpenChange={setModalOpen}>
       <DialogTrigger asChild>
         <button
-          className="rounded-xl flex gap-2 items-center hover: cursor-pointer px-4 py-2 border border-border bg-primary/10 backdrop-blur-sm text-sm font-normal text-primary hover:bg-primary-20"
+          className="rounded-xl flex gap-2 items-center cursor-pointer p-2 sm:px-4 sm:py-2 border border-border bg-primary/10 backdrop-blur-sm text-sm font-normal text-primary hover:bg-primary/20"
           onClick={() => {
             resetForm();
             setModalOpen(true);
           }}
         >
-          <PlusIcon /> Create Webinar{" "}
+          <PlusIcon /> <span className="hidden sm:block">Create Webinar</span>
         </button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[900px] p-0 bg-transparent border-none">
+      <DialogContent className="sm:max-w-[900px] p-0 bg-transparent border-none max-h-[95vh] overflow-y-auto scrollbar-hide">
         {isComplete ? (
           <div className="bg-muted text-primary rounded-lg overflow-hidden">
             <DialogTitle className="sr-only">Create Webinar</DialogTitle>

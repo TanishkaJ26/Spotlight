@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useAiAgentStore } from "@/store/useAiAgentStore";
-import { Info, Loader2 } from "lucide-react";
+import { Info, Loader2, ChevronDown, ChevronUp } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import ConfigField from "./ConfigField";
@@ -15,6 +15,7 @@ const ModelConfiguration = () => {
   const [firstMessage, setFirstMessage] = useState("");
   const [systemPrompt, setSystemPrompt] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isSystemPromptExpanded, setIsSystemPromptExpanded] = useState(false);
 
   useEffect(() => {
     if (assistant) {
@@ -59,7 +60,7 @@ const ModelConfiguration = () => {
   }
 
   return (
-    <div className="bg-neutral-900 rounded-xl p-6 mb-6">
+    <div className="bg-neutral-900 rounded-xl p-4 sm:p-6 mb-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Model</h2>
         <Button onClick={handleUpdateAssistant} disabled={loading}>
@@ -99,11 +100,21 @@ const ModelConfiguration = () => {
         <Textarea
           value={systemPrompt}
           onChange={(e) => setSystemPrompt(e.target.value)}
-          className="bg-primary/10 border-input min-h-[300px] max-h-[500px] font-mono text-sm"
+          className={`bg-primary/10 border-input max-h-[500px] font-mono text-sm transition-all duration-300 ${isSystemPromptExpanded ? "min-h-[300px]" : "h-[120px] min-h-[120px]"} sm:min-h-[300px] sm:h-auto`}
         />
+        <div 
+          onClick={() => setIsSystemPromptExpanded(!isSystemPromptExpanded)}
+          className="sm:hidden text-xs text-neutral-500 hover:text-neutral-300 cursor-pointer mt-2 flex items-center justify-end gap-1"
+        >
+          {isSystemPromptExpanded ? (
+            <>Show less <ChevronUp className="w-3 h-3" /></>
+          ) : (
+            <>Show more <ChevronDown className="w-3 h-3" /></>
+          )}
+        </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <ConfigField label="Provider">
           <DropdownSelect value={assistant.model?.provider || ""} />
         </ConfigField>

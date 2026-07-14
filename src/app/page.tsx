@@ -83,20 +83,20 @@ export default function Home() {
       </nav>
 
       {/* Main Hero Section */}
-      <main className="flex-1 relative z-10 grid grid-cols-1 md:grid-cols-12 items-center px-6 pt-12 pb-24 max-w-7xl mx-auto w-full gap-12 min-h-[80vh]">
+      <main className="flex-1 relative z-10 grid grid-cols-1 md:grid-cols-12 items-center px-6 pt-8 md:pt-12 pb-12 md:pb-24 max-w-7xl mx-auto w-full gap-8 md:gap-12 min-h-[auto] md:min-h-[80vh]">
         {/* Left Column */}
         <div className="md:col-span-6 lg:col-span-7 flex flex-col items-start text-left z-20 w-full">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-lg md:text-md lg:text-[30px] font-bold text-white mb-2 leading-[1.1]"
+            className="text-xl font-medium md:font-bold md:text-md lg:text-[30px] text-white mb-2 leading-[1.1]"
           >
             Transform your business
             <br />
             with an autonomous
             <br />
-            <span className="pb-2 ml-[-20px] mr-[-130px] tracking-[-5px] text-transparent bg-clip-text bg-gradient-to-r from-[#8B5CF6] to-[#D8B4FE] uppercase text-[180px] md:text-[72px] lg:text-[120px] font-black leading-[1.1] block mt-2 drop-shadow-[0_0_15px_rgba(139,92,246,0.3)]">
+            <span className="pb-2 md:ml-[-20px] md:mr-[-130px] tracking-[-2px] md:tracking-[-5px] text-transparent bg-clip-text bg-gradient-to-r from-[#8B5CF6] to-[#D8B4FE] uppercase text-[60px] md:text-[72px] lg:text-[120px] font-black leading-[1.1] block mt-2 drop-shadow-[0_0_15px_rgba(139,92,246,0.3)]">
               AI SALES
               <br />
               AGENT
@@ -107,16 +107,18 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="mt-8 flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto"
+            className="mt-8 flex flex-row items-center gap-3 sm:gap-4 w-full sm:w-auto"
           >
-            <SignInButton mode="modal">
-              <button className="w-full sm:w-auto px-8 py-4 rounded-4xl bg-gradient-to-r from-[#7C3AED] to-[#A855F7] text-white font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-[0_0_20px_rgba(139,92,246,0.5)] cursor-pointer text-lg">
-                Get Started Free <ChevronRight className="w-5 h-5" />
-              </button>
-            </SignInButton>
+            <div className="flex-1 sm:flex-none">
+              <SignInButton mode="modal">
+                <button className="w-full sm:w-auto px-2 sm:px-8 py-3 sm:py-4 rounded-3xl sm:rounded-4xl bg-gradient-to-r from-[#7C3AED] to-[#A855F7] text-white font-medium flex items-center justify-center gap-1 sm:gap-2 hover:opacity-90 transition-opacity shadow-[0_0_20px_rgba(139,92,246,0.5)] cursor-pointer text-xs sm:text-lg whitespace-nowrap">
+                  Get Started Free <ChevronRight className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
+                </button>
+              </SignInButton>
+            </div>
             <Link
               href="#features"
-              className="w-full sm:w-auto px-8 py-4 rounded-4xl bg-transparent text-slate-200 font-medium border border-white/30 hover:border-white hover:bg-white/10 transition-colors text-center text-lg"
+              className="flex-1 sm:flex-none w-full sm:w-auto px-2 sm:px-8 py-3 sm:py-4 rounded-3xl sm:rounded-4xl bg-transparent text-slate-200 font-medium border border-white/30 hover:border-white hover:bg-white/10 transition-colors flex items-center justify-center text-xs sm:text-lg whitespace-nowrap"
             >
               Explore Features
             </Link>
@@ -330,10 +332,10 @@ export default function Home() {
       {/* Details / Features Section */}
       <section
         id="features"
-        className="relative z-10 py-24 flex flex-col items-center bg-transparent"
+        className="relative z-10 py-12 md:py-24 flex flex-col items-center bg-transparent"
       >
         <div className="max-w-7xl mx-auto px-6 w-full">
-          <div className="text-center mb-16">
+          <div className="text-center mb-10 md:mb-16">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 pb-2 bg-gradient-to-r from-white via-[#D8B4FE] to-[#8B5CF6] bg-clip-text text-transparent drop-shadow-sm">
               Supercharge Your Sales Funnel
             </h2>
@@ -391,15 +393,15 @@ export default function Home() {
       </section>
 
       {/* Workflow & Product Showcase Section */}
-      <section className="relative z-10 pb-24 flex flex-col items-center bg-transparent">
+      <section className="relative z-10 pb-12 md:pb-24 flex flex-col items-center bg-transparent">
         <div className="max-w-7xl mx-auto px-6 w-full flex flex-col items-center">
           {/* Pill */}
-          <div className="mb-8 px-5 py-2 rounded-full border border-white/10 bg-[#150724]/50 backdrop-blur-md">
+          <div className="mb-6 md:mb-8 px-5 py-2 rounded-full border border-white/10 bg-[#150724]/50 backdrop-blur-md">
             <span className="text-sm font-medium text-slate-300">Premium</span>
           </div>
 
           {/* Heading */}
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-16 text-center leading-tight tracking-tight">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-10 md:mb-16 text-center leading-tight tracking-tight">
             <span className="text-white">Workflow &</span>
             <br />
             <span className="pb-2 text-transparent bg-clip-text bg-gradient-to-r from-[#D8B4FE] to-[#8B5CF6]">
@@ -407,7 +409,7 @@ export default function Home() {
             </span>
           </h2>
 
-          <h3 className="text-3xl md:text-4xl font-bold mb-20 text-white text-center">
+          <h3 className="text-3xl md:text-4xl font-bold mb-12 md:mb-20 text-white text-center">
             How It Works
           </h3>
 
@@ -423,7 +425,7 @@ export default function Home() {
                 <div className="w-24 h-24 rounded-full bg-[#150724]/80 backdrop-blur-xl border border-white/10 shadow-[0_0_30px_rgba(192,132,252,0.3)] flex items-center justify-center text-4xl font-bold text-white mb-8 relative">
                   1
                 </div>
-                <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center mb-4 text-[#D8B4FE] bg-white/5">
+                <div className="hidden md:flex w-12 h-12 rounded-full border border-white/10 items-center justify-center mb-4 text-[#D8B4FE] bg-white/5">
                   <Database className="w-5 h-5" />
                 </div>
                 <h4 className="text-lg font-semibold text-white mb-3">
@@ -440,7 +442,7 @@ export default function Home() {
                 <div className="w-24 h-24 rounded-full bg-[#150724]/80 backdrop-blur-xl border border-white/10 shadow-[0_0_30px_rgba(139,92,246,0.3)] flex items-center justify-center text-4xl font-bold text-white mb-8 relative">
                   2
                 </div>
-                <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center mb-4 text-[#D8B4FE] bg-white/5">
+                <div className="hidden md:flex w-12 h-12 rounded-full border border-white/10 items-center justify-center mb-4 text-[#D8B4FE] bg-white/5">
                   <Video className="w-5 h-5" />
                 </div>
                 <h4 className="text-lg font-semibold text-white mb-3">
@@ -457,7 +459,7 @@ export default function Home() {
                 <div className="w-24 h-24 rounded-full bg-[#150724]/80 backdrop-blur-xl border border-white/10 shadow-[0_0_30px_rgba(59,130,246,0.3)] flex items-center justify-center text-4xl font-bold text-white mb-8 relative">
                   3
                 </div>
-                <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center mb-4 text-[#D8B4FE] bg-white/5">
+                <div className="hidden md:flex w-12 h-12 rounded-full border border-white/10 items-center justify-center mb-4 text-[#D8B4FE] bg-white/5">
                   <Handshake className="w-5 h-5" />
                 </div>
                 <h4 className="text-lg font-semibold text-white mb-3">
@@ -476,10 +478,10 @@ export default function Home() {
       {/* Pricing Section */}
       <section
         id="pricing"
-        className="relative z-10 py-24 flex flex-col items-center bg-transparent"
+        className="relative z-10 py-12 md:py-24 flex flex-col items-center bg-transparent"
       >
         <div className="max-w-7xl mx-auto px-6 w-full">
-          <div className="text-center mb-16">
+          <div className="text-center mb-10 md:mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
               Simple, transparent pricing
             </h2>
@@ -584,9 +586,9 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="relative z-10 pt-20 pb-10 bg-[#07020F] border-t border-white/5">
+      <footer className="relative z-10 pt-12 md:pt-20 pb-6 md:pb-10 bg-[#07020F] border-t border-white/5">
         <div className="max-w-7xl mx-auto px-6 w-full">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12 mb-10 md:mb-16">
             <div className="col-span-1 md:col-span-2">
               <div className="flex items-center gap-2 mb-6">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#7C3AED] to-[#A855F7] flex items-center justify-center">
@@ -602,80 +604,82 @@ export default function Home() {
               </p>
             </div>
 
-            <div>
-              <h4 className="font-semibold text-white mb-6 text-sm">Product</h4>
-              <ul className="space-y-4 text-sm text-slate-400">
-                <li>
-                  <Link
-                    href="#"
-                    className="hover:text-[#C084FC] transition-colors"
-                  >
-                    Features
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="#"
-                    className="hover:text-[#C084FC] transition-colors"
-                  >
-                    Pricing
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="#"
-                    className="hover:text-[#C084FC] transition-colors"
-                  >
-                    Use Cases
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="#"
-                    className="hover:text-[#C084FC] transition-colors"
-                  >
-                    Integrations
-                  </Link>
-                </li>
-              </ul>
-            </div>
+            <div className="col-span-1 md:col-span-2 grid grid-cols-2 gap-8 md:gap-12">
+              <div>
+                <h4 className="font-semibold text-white mb-6 text-sm">Product</h4>
+                <ul className="space-y-4 text-sm text-slate-400">
+                  <li>
+                    <Link
+                      href="#"
+                      className="hover:text-[#C084FC] transition-colors"
+                    >
+                      Features
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="#"
+                      className="hover:text-[#C084FC] transition-colors"
+                    >
+                      Pricing
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="#"
+                      className="hover:text-[#C084FC] transition-colors"
+                    >
+                      Use Cases
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="#"
+                      className="hover:text-[#C084FC] transition-colors"
+                    >
+                      Integrations
+                    </Link>
+                  </li>
+                </ul>
+              </div>
 
-            <div>
-              <h4 className="font-semibold text-white mb-6 text-sm">Company</h4>
-              <ul className="space-y-4 text-sm text-slate-400">
-                <li>
-                  <Link
-                    href="#"
-                    className="hover:text-[#C084FC] transition-colors"
-                  >
-                    About Us
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="#"
-                    className="hover:text-[#C084FC] transition-colors"
-                  >
-                    Careers
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="#"
-                    className="hover:text-[#C084FC] transition-colors"
-                  >
-                    Blog
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="#"
-                    className="hover:text-[#C084FC] transition-colors"
-                  >
-                    Contact
-                  </Link>
-                </li>
-              </ul>
+              <div>
+                <h4 className="font-semibold text-white mb-6 text-sm">Company</h4>
+                <ul className="space-y-4 text-sm text-slate-400">
+                  <li>
+                    <Link
+                      href="#"
+                      className="hover:text-[#C084FC] transition-colors"
+                    >
+                      About Us
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="#"
+                      className="hover:text-[#C084FC] transition-colors"
+                    >
+                      Careers
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="#"
+                      className="hover:text-[#C084FC] transition-colors"
+                    >
+                      Blog
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="#"
+                      className="hover:text-[#C084FC] transition-colors"
+                    >
+                      Contact
+                    </Link>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
 

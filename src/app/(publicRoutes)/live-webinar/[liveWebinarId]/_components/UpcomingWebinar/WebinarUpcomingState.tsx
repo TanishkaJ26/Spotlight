@@ -19,7 +19,7 @@ type Props = {
 };
 
 const WebinarUpcomingState = ({ webinar, currentUser }: Props) => {
-  const [loading, setLoading] = useState(false);
+  const [loadingAction, setLoadingAction] = useState<"start" | "cancel" | null>(null);
   const router = useRouter();
   const { attendee } = useAttendeeStore();
 
@@ -43,6 +43,9 @@ const WebinarUpcomingState = ({ webinar, currentUser }: Props) => {
         if (latestWebinar?.webinarStatus === "LIVE") {
           toast.success("Webinar is starting! Joining automatically...");
           router.refresh(); // Triggers server component re-render to load Participate.tsx
+        } else if (latestWebinar?.webinarStatus === "CANCELLED") {
+          toast.error("The webinar has been cancelled.");
+          router.refresh();
         }
       } catch (error) {
         console.error("Failed to poll webinar status", error);
@@ -60,7 +63,7 @@ const WebinarUpcomingState = ({ webinar, currentUser }: Props) => {
   ]);
 
   const handleStartWebinar = async () => {
-    setLoading(true);
+    setLoadingAction("start");
     try {
       if (!currentUser?.id) {
         throw new Error("User not authenticated");
@@ -74,25 +77,51 @@ const WebinarUpcomingState = ({ webinar, currentUser }: Props) => {
 
       toast.success("Webinar started successfully");
       router.refresh();
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
-      toast.error("Something went wrong");
+      toast.error(error.message || "Something went wrong");
     } finally {
-      setLoading(false);
+      setLoadingAction(null);
+    }
+  };
+
+  const handleCancelWebinar = async () => {
+    setLoadingAction("cancel");
+    try {
+      if (!currentUser?.id) {
+        throw new Error("User not authenticated");
+      }
+
+      const res = await changeWebinarStatus(webinar.id, "CANCELLED");
+      if (!res.success) {
+        throw new Error(res.message);
+      }
+
+      toast.success("Webinar cancelled successfully");
+      router.refresh();
+    } catch (error: any) {
+      console.log(error);
+      toast.error(error.message || "Something went wrong");
+    } finally {
+      setLoadingAction(null);
     }
   };
   return (
-    <div className="w-full h-[100dvh] overflow-hidden mx-auto max-w-[400px] flex flex-col justify-center items-center gap-4 py-4">
+    <div className="w-full h-[100dvh] overflow-hidden mx-auto max-w-[400px] flex flex-col justify-center items-center gap-4 py-4 px-4 sm:px-0">
       <div className="space-y-4">
         <p className="text-3xl font-semibold text-primary text-center">
-          Seems like you are a little early.
+          {webinar.webinarStatus === WebinarStatusEnum.CANCELLED
+            ? "Webinar Cancelled"
+            : "Seems like you are a little early."}
         </p>
-        <CountdownTimer
-          targetDate={new Date(webinar.startTime)}
-          className="text-center"
-          webinarId={webinar.id}
-          webinarStatus={webinar.webinarStatus}
-        />
+        {webinar.webinarStatus !== WebinarStatusEnum.CANCELLED && (
+          <CountdownTimer
+            targetDate={new Date(webinar.startTime)}
+            className="text-center"
+            webinarId={webinar.id}
+            webinarStatus={webinar.webinarStatus}
+          />
+        )}
       </div>
       <div className="w-full flex justify-center items-center flex-col">
         <div className="w-full max-w-md aspect-video relative rounded-4xl overflow-hidden mb-4">
@@ -104,29 +133,70 @@ const WebinarUpcomingState = ({ webinar, currentUser }: Props) => {
             priority
           />
         </div>
-        <div className="mt-8">
+        <div className="mt-8 w-full flex justify-center">
           {webinar?.webinarStatus === WebinarStatusEnum.SCHEDULED ? (
-            <WaitListComponent
-              webinarId={webinar.id}
-              webinarStatus="SCHEDULED"
-            />
+            currentUser?.id === webinar?.presenterId ? (
+              <div className="flex flex-row items-center gap-3 w-full max-w-[400px] justify-center">
+                <WaitListComponent
+                  webinarId={webinar.id}
+                  webinarStatus="SCHEDULED"
+                />
+                <Button
+                  variant="destructive"
+                  className="font-semibold"
+                  onClick={handleCancelWebinar}
+                  disabled={loadingAction !== null}
+                >
+                  {loadingAction === "cancel" ? (
+                    <>
+                      <Loader2 className="animate-spin mr-2" />
+                      Cancelling...
+                    </>
+                  ) : (
+                    "Cancel Webinar"
+                  )}
+                </Button>
+              </div>
+            ) : (
+              <WaitListComponent
+                webinarId={webinar.id}
+                webinarStatus="SCHEDULED"
+              />
+            )
           ) : webinar?.webinarStatus === WebinarStatusEnum.WAITING_ROOM ? (
             <>
               {currentUser?.id === webinar?.presenterId ? (
-                <Button
-                  className="w-full max-w-[300px] font-semibold"
-                  onClick={handleStartWebinar}
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="animate-spin mr-2" />
-                      Starting...
-                    </>
-                  ) : (
-                    "Start Webinar"
-                  )}
-                </Button>
+                <div className="flex flex-row items-center gap-4 w-[85%] max-w-[400px] justify-center">
+                  <Button
+                    className="flex-1 font-semibold"
+                    onClick={handleStartWebinar}
+                    disabled={loadingAction !== null}
+                  >
+                    {loadingAction === "start" ? (
+                      <>
+                        <Loader2 className="animate-spin mr-2" />
+                        Starting...
+                      </>
+                    ) : (
+                      "Start Webinar"
+                    )}
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    className="flex-1 font-semibold"
+                    onClick={handleCancelWebinar}
+                    disabled={loadingAction !== null}
+                  >
+                    {loadingAction === "cancel" ? (
+                      <>
+                        <Loader2 className="animate-spin mr-2" />
+                        Cancelling...
+                      </>
+                    ) : (
+                      "Cancel Webinar"
+                    )}
+                  </Button>
+                </div>
               ) : (
                 <WaitListComponent
                   webinarId={webinar.id}
@@ -137,9 +207,13 @@ const WebinarUpcomingState = ({ webinar, currentUser }: Props) => {
           ) : webinar?.webinarStatus === WebinarStatusEnum.LIVE ? (
             <WaitListComponent webinarId={webinar.id} webinarStatus="LIVE" />
           ) : webinar?.webinarStatus === WebinarStatusEnum.CANCELLED ? (
-            <p className="text-center text-xl text-foreground font-semibold">
-              Webinar is Cancelled
-            </p>
+            <Button
+              variant="destructive"
+              className="w-full max-w-[400px] font-semibold opacity-50 cursor-not-allowed"
+              disabled
+            >
+              Webinar has been cancelled
+            </Button>
           ) : (
             <Button> Ended </Button>
           )}

@@ -9,6 +9,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 import { useAttendeeStore } from "@/store/useAttendeeStore";
 import { WebinarStatusEnum } from "@prisma/client";
 import { Loader2 } from "lucide-react";
@@ -33,6 +35,7 @@ const WaitListComponent = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [errors, setErrors] = useState<{ name?: string; email?: string; phone?: string }>({});
 
   const { setAttendee } = useAttendeeStore();
   const router = useRouter();
@@ -52,6 +55,15 @@ const WaitListComponent = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const newErrors: typeof errors = {};
+    if (!name.trim()) newErrors.name = "Name is required";
+    if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) newErrors.email = "Please enter a valid email address";
+    if (!phone.match(/^\d{10}$/)) newErrors.phone = "Phone number must be exactly 10 digits";
+
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
+
     setIsSubmitting(true);
     try {
       const res = await registerAttendee({
@@ -121,29 +133,87 @@ const WaitListComponent = ({
             ? "Join the Webinar"
             : "Join the Waitlist"}
         </DialogTitle>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
+        <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4 w-full">
           {!submitted && (
             <React.Fragment>
-              <Input
-                type="text"
-                placeholder="Your Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-              <Input
-                type="email"
-                placeholder="Your Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-              <Input
-                type="tel"
-                placeholder="Your Phone Number"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-              />
+              <div className="space-y-2">
+                <Label
+                  htmlFor="name"
+                  className={errors.name ? "text-red-400" : ""}
+                >
+                  Your Name <span className="text-red-400">*</span>
+                </Label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="Your Name"
+                  value={name}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    if (errors.name) setErrors({ ...errors, name: undefined });
+                  }}
+                  className={cn(
+                    "!bg-background/50 border border-input",
+                    errors.name && "border-red-400 focus-visible:ring-red-400"
+                  )}
+                />
+                {errors.name && (
+                  <p className="text-sm text-red-400">{errors.name}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label
+                  htmlFor="email"
+                  className={errors.email ? "text-red-400" : ""}
+                >
+                  Your Email <span className="text-red-400">*</span>
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Your Email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (errors.email) setErrors({ ...errors, email: undefined });
+                  }}
+                  className={cn(
+                    "!bg-background/50 border border-input",
+                    errors.email && "border-red-400 focus-visible:ring-red-400"
+                  )}
+                />
+                {errors.email && (
+                  <p className="text-sm text-red-400">{errors.email}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label
+                  htmlFor="phone"
+                  className={errors.phone ? "text-red-400" : ""}
+                >
+                  Your Phone Number <span className="text-red-400">*</span>
+                </Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  placeholder="Your Phone Number"
+                  value={phone}
+                  onChange={(e) => {
+                    setPhone(e.target.value.replace(/\D/g, ""));
+                    if (errors.phone) setErrors({ ...errors, phone: undefined });
+                  }}
+                  maxLength={10}
+                  className={cn(
+                    "!bg-background/50 border border-input",
+                    errors.phone && "border-red-400 focus-visible:ring-red-400"
+                  )}
+                />
+                {errors.phone && (
+                  <p className="text-sm text-red-400">{errors.phone}</p>
+                )}
+              </div>
             </React.Fragment>
           )}
 

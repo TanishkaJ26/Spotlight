@@ -28,11 +28,11 @@ const page = async (props: Props) => {
   );
 
   return (
-    <div className="w-full mx-auto py-8 px-4">
+    <div className="w-full mx-auto py-2 sm:py-8 px-0 sm:px-4">
       <h1 className="text-2xl font-bold mb-6">Payment Integration</h1>
       <div className="w-full p-6 border border-input rounded-lg bg-background shadow-sm">
-        <div className="flex items-center mb-4">
-          <div className="h-10 w-10 rounded-full bg-gradient-to-r from-purple-500 to-indigo-600 flex items-center justify-center mr-4">
+        <div className="flex flex-col sm:flex-row items-center mb-4 text-center sm:text-left">
+          <div className="h-10 w-10 rounded-full bg-gradient-to-r from-purple-500 to-indigo-600 flex items-center justify-center mr-0 sm:mr-4 mb-2 sm:mb-0 shrink-0">
             <StarIcon className="w-6 h-6 text-white" />
           </div>
           <div>
@@ -67,7 +67,7 @@ const page = async (props: Props) => {
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="text-sm text-muted-foreground">
+          <div className="text-sm text-muted-foreground text-center sm:text-left">
             {isConnected
               ? "You reconnect anytime if needed"
               : "You'll be redirected to Stripe to complete the connection"}
@@ -75,7 +75,7 @@ const page = async (props: Props) => {
 
           <Link
             href={stripeLink}
-            className={`px-5 py-2.5 rounded-md font-medium text-sm flex items-center gap-2 transition-colors ${
+            className={`w-full sm:w-auto justify-center px-5 py-2.5 rounded-md font-medium text-sm flex items-center gap-2 transition-colors ${
               isConnected
                 ? "bg-muted hover:bg-muted/80 text-foreground border border-border"
                 : "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-md shadow-purple-500/20"
@@ -120,8 +120,8 @@ const page = async (props: Props) => {
         {/* Subtle red glow in the background */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/5 rounded-full blur-[80px] pointer-events-none" />
 
-        <div className="flex items-center mb-6 relative z-10">
-          <div className="h-10 w-10 rounded-full bg-red-500/10 flex items-center justify-center mr-4 border border-red-500/20">
+        <div className="flex flex-col sm:flex-row items-center mb-6 relative z-10 text-center sm:text-left">
+          <div className="h-10 w-10 rounded-full bg-red-500/10 flex items-center justify-center mr-0 sm:mr-4 mb-2 sm:mb-0 border border-red-500/20 shrink-0">
             <LogOut className="w-5 h-5 text-red-500" />
           </div>
           <div>
@@ -135,13 +135,13 @@ const page = async (props: Props) => {
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-border relative z-10">
-          <div className="text-sm text-muted-foreground">
+          <div className="text-sm text-muted-foreground text-center sm:text-left">
             Sign out of your account securely. You will need to log in again to
             access the dashboard.
           </div>
 
           <SignOutButton>
-            <button className="px-5 py-2.5 rounded-md font-medium text-sm flex items-center gap-2 transition-all bg-red-500/10 hover:bg-red-500 hover:text-white text-red-500 border border-red-500/20 shadow-sm cursor-pointer">
+            <button className="w-full sm:w-auto justify-center px-5 py-2.5 rounded-md font-medium text-sm flex items-center gap-2 transition-all bg-red-500/10 hover:bg-red-500 hover:text-white text-red-500 border border-red-500/20 shadow-sm cursor-pointer">
               <LogOut size={16} />
               Sign Out
             </button>

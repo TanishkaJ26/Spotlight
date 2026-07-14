@@ -17,7 +17,7 @@ const FeatureSectionLayout = ({
 }: Props) => {
   return (
     <div
-      className={`p-10 flex items-center justify-between flex-col gap-10 border rounded-3xl border-border bg-background-10 ${className}`}
+      className={`p-4 sm:p-10 flex items-center justify-between flex-col gap-6 sm:gap-10 border rounded-3xl border-border bg-background-10 ${className}`}
     >
       {children}
       <div className="w-full justify-between items-center flex flex-wrap gap-10">

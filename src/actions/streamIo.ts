@@ -84,9 +84,9 @@ export const createAndStartStream = async (webinar: Webinar) => {
     });
     await call.goLive({ start_recording: false });
     console.log("Stream successfully started");
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating and starting stream:", error);
-    throw new Error("Failed to create and start stream");
+    throw new Error(error.message || "Failed to create and start stream");
   }
 };
 

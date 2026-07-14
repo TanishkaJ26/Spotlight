@@ -22,12 +22,19 @@ import {
   Calendar,
   ShoppingCart,
   CircleDot,
+  MoreVertical,
 } from "lucide-react";
 import { StreamChat } from "stream-chat";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CtaTypeEnum } from "@prisma/client";
 import { Chat, Channel, MessageList, MessageInput } from "stream-chat-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useTheme } from "next-themes";
 import CTADialogBox from "./CTADialogBox";
 import { toast } from "sonner";
@@ -268,7 +275,7 @@ const LiveWebinarView = ({
   // if(!chatClient || !channel) return null
 
   return (
-    <div className="flex flex-col w-full h-screen overflow-hidden bg-background text-foreground">
+    <div className="flex flex-col w-full h-[100dvh] overflow-hidden bg-background text-foreground py-4 sm:py-0">
       <div className="py-2 px-4 border-b border-border flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <div className="bg-accent-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium flex items-center">
@@ -301,8 +308,8 @@ const LiveWebinarView = ({
             <span>Chat</span>
             {!showChat && hasUnreadMessages && (
               <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-destructive"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
               </span>
             )}
           </button>
@@ -461,7 +468,7 @@ const LiveWebinarView = ({
                         onClick={() => setObsDialogBox(true)}
                         variant="secondary"
                         size="icon"
-                        className="rounded-full h-10 w-10"
+                        className="rounded-full h-10 w-10 hidden sm:inline-flex"
                       >
                         <Key className="h-4 w-4" />
                       </Button>
@@ -477,7 +484,7 @@ const LiveWebinarView = ({
                         onClick={handleToggleRecording}
                         variant={isRecording ? "destructive" : "secondary"}
                         size="icon"
-                        className="rounded-full h-10 w-10"
+                        className="rounded-full h-10 w-10 hidden sm:inline-flex"
                       >
                         {isRecording ? (
                           <StopCircle className="h-4 w-4" />
@@ -519,7 +526,7 @@ const LiveWebinarView = ({
                       <Button
                         onClick={handleCTAButtonClick}
                         size="icon"
-                        className="rounded-full h-10 w-10 bg-white text-black hover:bg-gray-200"
+                        className="rounded-full h-10 w-10 bg-white text-black hover:bg-gray-200 hidden sm:inline-flex"
                       >
                         {webinar.ctaType === CtaTypeEnum.BOOK_A_CALL ? (
                           <Calendar className="h-4 w-4" />
@@ -536,6 +543,57 @@ const LiveWebinarView = ({
                       </p>
                     </TooltipContent>
                   </Tooltip>
+
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="secondary"
+                        size="icon"
+                        className="rounded-full h-10 w-10 sm:hidden"
+                      >
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56">
+                      <DropdownMenuItem
+                        onClick={() => setObsDialogBox(true)}
+                        className="cursor-pointer py-3"
+                      >
+                        <Key className="mr-2 h-4 w-4" />
+                        <span className="whitespace-nowrap">
+                          OBS Credentials
+                        </span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={handleToggleRecording}
+                        className="cursor-pointer py-3"
+                      >
+                        {isRecording ? (
+                          <StopCircle className="mr-2 h-4 w-4" />
+                        ) : (
+                          <CircleDot className="mr-2 h-4 w-4" />
+                        )}
+                        <span className="whitespace-nowrap">
+                          {isRecording ? "Stop Recording" : "Start Recording"}
+                        </span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={handleCTAButtonClick}
+                        className="cursor-pointer py-3"
+                      >
+                        {webinar.ctaType === CtaTypeEnum.BOOK_A_CALL ? (
+                          <Calendar className="mr-2 h-4 w-4" />
+                        ) : (
+                          <ShoppingCart className="mr-2 h-4 w-4" />
+                        )}
+                        <span className="whitespace-nowrap">
+                          {webinar.ctaType === CtaTypeEnum.BOOK_A_CALL
+                            ? "Push Call To Action"
+                            : "Push Buy Now To Action"}
+                        </span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </TooltipProvider>
             ) : (
@@ -552,7 +610,10 @@ const LiveWebinarView = ({
         </div>
 
         {showChat && chatClient && (
-          <div data-theme={resolvedTheme} className="flex-1 md:flex-none md:w-72 h-full overflow-hidden">
+          <div
+            data-theme={resolvedTheme}
+            className="flex-1 md:flex-none md:w-72 h-full overflow-hidden"
+          >
             <Chat
               client={chatClient}
               theme={
