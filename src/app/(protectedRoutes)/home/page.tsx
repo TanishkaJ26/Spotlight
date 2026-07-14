@@ -33,49 +33,78 @@ const Pages = (props: Props) => {
         </div>
       </div>
 
-      <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6 rounded-xl bg-background-10">
+      <div className="mt-12 grid grid-cols-1 xl:grid-cols-2 gap-8">
         <FeatureSectionLayout
           heading="See how far along are your potential customers"
           link="/lead"
         >
-          <div className="p-5 flex flex-col gap-4 items-start border rounded-xl border-border backdrop-blur-3xl">
-            <div className="w-full flex justify-between items-center gap-3">
-              <p className="text-primary font-semibold text-sm">Conversions</p>
-              <p className="text-xs text-muted-foreground font-normal">50</p>
+          <div className="p-8 flex flex-col gap-6 items-start border rounded-3xl border-white/10 bg-black/40 backdrop-blur-xl relative overflow-hidden h-full w-full shadow-2xl transition-all duration-500 hover:border-white/20 group">
+            {/* Glowing Orb Top Right */}
+            <div className="absolute top-0 right-0 w-80 h-80 bg-purple-500/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3 transition-all duration-700 group-hover:bg-purple-500/20 group-hover:blur-[100px]" />
+            
+            <div className="w-full flex justify-between items-center z-10">
+              <div className="flex items-center gap-3">
+                 <div className="relative flex h-3 w-3">
+                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-500 opacity-75"></span>
+                   <span className="relative inline-flex rounded-full h-3 w-3 bg-purple-500"></span>
+                 </div>
+                 <p className="text-white font-semibold text-sm tracking-wide">Active Conversions</p>
+              </div>
+              <p className="text-xs text-purple-300 font-semibold bg-purple-500/10 border border-purple-500/20 px-4 py-1.5 rounded-full shadow-sm">
+                50 Pending
+              </p>
             </div>
-            <div className="flex flex-col gap-4 items-start">
-              {Array.from({ length: 3 }).map((_, index) => (
-                <Image
-                  src="/featurecard.png"
-                  alt="Info-card"
-                  width={250}
-                  height={250}
-                  className="w-full h-full object-cover rounded-xl"
-                  key={index}
-                />
+            
+            <div className="flex flex-col gap-4 w-full z-10 mt-2 pb-6">
+              {potentialCustomer.slice(0, 3).map((customer, index) => (
+                <div key={index} className="opacity-90 hover:opacity-100 hover:scale-[1.02] transition-all duration-300 cursor-pointer">
+                  <UserInfoCard
+                    customer={customer as any}
+                    tags={customer.tags}
+                    className="bg-white/5 border-white/10 shadow-md backdrop-blur-md"
+                  />
+                </div>
               ))}
             </div>
+            
+            {/* Fade out gradient at bottom */}
+            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/80 to-transparent z-20 pointer-events-none rounded-b-3xl" />
           </div>
         </FeatureSectionLayout>
+
         <FeatureSectionLayout
           heading="See the list of your current customers"
           link="/lead"
         >
-          <div className="flex gap-4 items-center h-full w-full justify center relative flex-wrap">
-            {potentialCustomer.slice(0, 2).map((customer, index) => (
-              <UserInfoCard
-                customer={customer}
-                tags={customer.tags}
-                key={index}
-              />
-            ))}
-            <Image
-              src={"/glowCard.png"}
-              alt="Info-card"
-              width={350}
-              height={350}
-              className="object-cover rounded-xl absolute px-5 mb-28 hidden sm:flex backdrop-blur-[20px]"
-            />
+          <div className="p-8 flex flex-col gap-6 items-start border rounded-3xl border-white/10 bg-black/40 backdrop-blur-xl relative overflow-hidden h-full w-full shadow-2xl transition-all duration-500 hover:border-white/20 group">
+            {/* Glowing Orb Bottom Left */}
+            <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-500/10 rounded-full blur-[80px] translate-y-1/3 -translate-x-1/3 transition-all duration-700 group-hover:bg-blue-500/20 group-hover:blur-[100px]" />
+
+            <div className="w-full flex justify-between items-center z-10 mb-2">
+              <div className="flex items-center gap-3">
+                 <div className="w-3 h-3 rounded-full bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.8)]" />
+                 <p className="text-white font-semibold text-sm tracking-wide">Recent Customers</p>
+              </div>
+              <p className="text-xs text-blue-300 font-medium bg-blue-500/10 px-4 py-1.5 rounded-full border border-blue-500/20">
+                Updated Today
+              </p>
+            </div>
+
+            {/* Wrapped Card Layout */}
+            <div className="w-full flex flex-wrap gap-4 pb-6 pt-2 z-10 justify-center">
+              {potentialCustomer.slice(0, 4).map((customer, index) => (
+                 <div key={index} className="w-[45%] min-w-[200px] flex-grow transition-all duration-300 hover:-translate-y-2 cursor-pointer">
+                   <UserInfoCard
+                     customer={customer as any}
+                     tags={customer.tags}
+                     className="bg-black/60 border-white/10 shadow-2xl backdrop-blur-xl h-full"
+                   />
+                 </div>
+              ))}
+            </div>
+            
+            {/* Subtle bottom fade */}
+            <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-[#0a0a0a] to-transparent z-20 pointer-events-none rounded-b-3xl" />
           </div>
         </FeatureSectionLayout>
       </div>

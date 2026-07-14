@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import CountdownTimer from "../../_components/UpcomingWebinar/CountdownTimer";
 import { CallStatusEnum } from "@prisma/client";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import { vapi } from "@/lib/vapi/vapiClient";
 import { changeCallStatus } from "@/actions/attendance";
 import {
@@ -63,6 +64,8 @@ const AutoConnectCall = ({
     userSpeakingTimeout: undefined as NodeJS.Timeout | undefined,
   });
 
+  const router = useRouter();
+
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -104,7 +107,8 @@ const AutoConnectCall = ({
           dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
         const normalizedVolume = average / 256;
 
-        if (normalizedVolume > 0.15 && !assistantIsSpeaking && !isMicMuted) {
+        // Lowered threshold from 0.15 to 0.05 for better sensitivity
+        if (normalizedVolume > 0.05 && !assistantIsSpeaking && !isMicMuted) {
           setUserIsSpeaking(true);
 
           if (refs.current.userSpeakingTimeout) {
@@ -117,9 +121,18 @@ const AutoConnectCall = ({
         }
         requestAnimationFrame(checkAudioLevel);
       };
+
+      // Kick off the loop (This was missing before!)
+      checkAudioLevel();
     } catch (error) {
       console.error("Failed to initialize audio:", error);
     }
+  };
+
+  const handleCallConclusion = () => {
+    setTimeout(() => {
+      router.push(`/live-webinar/${webinar.id}`);
+    }, 3000);
   };
 
   const stopCall = async () => {
@@ -132,6 +145,7 @@ const AutoConnectCall = ({
         throw new Error("Failed to update call status");
       }
       toast.success("Call ended successfully");
+      handleCallConclusion();
     } catch (error) {
       console.error("Failed to stop call:", error);
       toast.error("Failed to stop call. Please try again.");
@@ -218,6 +232,7 @@ const AutoConnectCall = ({
       console.log("Call ended");
       setCallStatus(CallStatus.FINISHED);
       cleanup();
+      handleCallConclusion();
     };
 
     const onSpeechStart = () => {
@@ -250,205 +265,152 @@ const AutoConnectCall = ({
   }, [userName, callTimeLimit]);
 
   return (
-    <div className="flex flex-col h-[calc(100vh-80px)] bg-background">
-      <div className="flex-1 flex flex-col md:flex-row p-4 gap-4 relative">
-        <div className="flex-1 bg-card rounded-xl overflow-hidden shadow-lg relative">
-          <div className="absolute top-4 left-4 bg-black/40 text-white px-3 py-1 rounded-full text-sm flex items-center gap-2 z-10">
-            <Mic
-              className={cn(
-                "h-4 w-4",
-                assistantIsSpeaking ? "text-accent-primary" : "",
-              )}
-            />
-            <span>{assistantName}</span>
-          </div>
+    <div className="flex flex-col h-[calc(100vh-80px)] bg-gradient-to-br from-background via-background to-accent-primary/5 relative overflow-hidden">
+      {/* Subtle Background Glow */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-accent-primary/10 via-background to-background pointer-events-none" />
 
-          <div className="h-full flex items-center justify-center">
+      <div className="flex-1 flex items-center justify-center p-4 md:p-8 z-10 w-full">
+        <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+          
+          {/* AI Card */}
+          <div className="relative aspect-video bg-card/30 backdrop-blur-xl rounded-3xl overflow-hidden border border-white/5 shadow-2xl flex items-center justify-center group transition-all duration-500 hover:border-white/10">
+            {/* Top Label */}
+            <div className="absolute top-4 left-4 bg-black/40 backdrop-blur-md text-white/90 px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 border border-white/5 shadow-lg">
+              <Mic
+                className={cn(
+                  "h-4 w-4 transition-colors duration-300",
+                  assistantIsSpeaking ? "text-accent-primary animate-pulse" : "text-muted-foreground"
+                )}
+              />
+              <span>{assistantName}</span>
+            </div>
+            
+            {/* Bot Avatar */}
             <div className="relative">
               {assistantIsSpeaking && (
                 <>
-                  <div
-                    className="absolute inset-0 rounded-full border-4 border-accent-primary animate-ping opacity-20"
-                    style={{ margin: "-8px" }}
-                  />
-
-                  <div
-                    className="absolute inset-0 rounded-full border-4 border-accent-primary animate-ping opacity-10"
-                    style={{ margin: "-16px", animationDelay: "0.5s" }}
-                  />
+                  <div className="absolute inset-0 rounded-full border border-accent-primary animate-ping opacity-40" style={{ margin: "-12px", animationDuration: "2s" }} />
+                  <div className="absolute inset-0 rounded-full border border-accent-primary animate-ping opacity-20" style={{ margin: "-24px", animationDuration: "2s", animationDelay: "0.5s" }} />
                 </>
               )}
-
               <div
                 className={cn(
-                  "flex justify-center items-center rounded-full overflow-hidden border-4 p-6",
+                  "flex justify-center items-center rounded-full overflow-hidden border-4 p-8 transition-all duration-500",
                   assistantIsSpeaking
-                    ? "border-accent-primary"
-                    : "border-accent-secondary/50",
+                    ? "border-accent-primary bg-accent-primary/10 shadow-[0_0_40px_rgba(var(--accent-primary),0.3)] scale-110"
+                    : "border-white/10 bg-black/20"
                 )}
               >
-                <Bot className="w-[70px] h-[70px]" />
+                <Bot className={cn("w-20 h-20 transition-all duration-500", assistantIsSpeaking ? "text-accent-primary" : "text-white/40")} />
               </div>
-
-              {assistantIsSpeaking && (
-                <div className="absolute -bottom-2 -right-2 bg-accent-primary text-white p-2 rounded-full">
-                  <Mic className="h-5 w-5" />
-                </div>
-              )}
             </div>
           </div>
-        </div>
 
-        <div className="flex-1 bg-card rounded-xl overflow-hidden shadow-lg relative">
-          <div className="absolute top-4 left-4 bg-black/40 text-white px-3 py-1 rounded-full text-smm flex items-center gap-2 z-10">
-            {isMicMuted ? (
-              <>
-                <MicOff className="h-4 w-4 text-destrcutive" />
-                <span>Muted</span>
-              </>
-            ) : (
-              <>
+          {/* User Card */}
+          <div className="relative aspect-video bg-card/30 backdrop-blur-xl rounded-3xl overflow-hidden border border-white/5 shadow-2xl flex items-center justify-center group transition-all duration-500 hover:border-white/10">
+            {/* Top Label */}
+            <div className="absolute top-4 left-4 bg-black/40 backdrop-blur-md text-white/90 px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 border border-white/5 shadow-lg">
+              {isMicMuted ? (
+                <MicOff className="h-4 w-4 text-destructive" />
+              ) : (
                 <Mic
                   className={cn(
-                    "h-4 w-4",
-                    userIsSpeaking ? "text-accent-secondary" : "",
+                    "h-4 w-4 transition-colors duration-300",
+                    userIsSpeaking ? "text-accent-secondary animate-pulse" : "text-muted-foreground"
                   )}
                 />
-                <span>{userName}</span>
-              </>
-            )}
-          </div>
+              )}
+              <span>{userName}</span>
+            </div>
+            
+            {/* Timer Label */}
+            <div className="absolute top-4 right-4 bg-black/40 backdrop-blur-md text-white/90 px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 border border-white/5 shadow-lg">
+              <Clock className={cn("h-4 w-4", timeRemaining < 30 ? "text-destructive" : "text-muted-foreground")} />
+              <span className={cn(timeRemaining < 30 ? "text-destructive animate-pulse font-bold" : "")}>
+                {formatTime(timeRemaining)}
+              </span>
+            </div>
 
-          <div className="absolute top-4 right-4 bg-black/40 text-white px-3 py-3 rounded-full text-sm flex items-center gap-2 z-10">
-            <Clock className="h-4 w-4" />
-            <span>{formatTime(timeRemaining)}</span>
-          </div>
-
-          <div className="h-full flex items-center justify-center">
+            {/* User Avatar */}
             <div className="relative">
               {userIsSpeaking && !isMicMuted && (
                 <>
-                  <div
-                    className="absolute inset-0 rounded-full border-4 border-accent-secondary animate-ping opacity-20"
-                    style={{ margin: "-8px" }}
-                  />
-
-                  <div
-                    className="absolute inset-0 rounded-full border-4 border-accent-secondary animate-ping opacity-10"
-                    style={{ margin: "-16px", animationDelay: "0.5s" }}
-                  />
+                  <div className="absolute inset-0 rounded-full border border-accent-secondary animate-ping opacity-40" style={{ margin: "-12px", animationDuration: "2s" }} />
+                  <div className="absolute inset-0 rounded-full border border-accent-secondary animate-ping opacity-20" style={{ margin: "-24px", animationDuration: "2s", animationDelay: "0.5s" }} />
                 </>
               )}
-
               <div
                 className={cn(
-                  "flex justify-center items-center rounded-full overflow-hidden border-4",
+                  "flex justify-center items-center rounded-full overflow-hidden border-4 transition-all duration-500",
                   isMicMuted
-                    ? "border-destructive/50"
+                    ? "border-destructive/40 bg-destructive/5"
                     : userIsSpeaking
-                      ? "border-accent-secondary"
-                      : "border-accent-secondary/50",
+                      ? "border-accent-secondary shadow-[0_0_40px_rgba(var(--accent-secondary),0.3)] scale-110"
+                      : "border-white/10"
                 )}
               >
-                <Avatar className="w-[118px] h-[118px]">
+                <Avatar className="w-32 h-32">
                   <AvatarImage src="/user-avatar.png" alt={userName} />
-                  <AvatarFallback className="text-5xl font-bold uppercase text-white">
+                  <AvatarFallback className="text-5xl font-bold uppercase text-white bg-secondary/30">
                     {userName.split("")?.[0]}
                   </AvatarFallback>
                 </Avatar>
               </div>
 
               {isMicMuted && (
-                <div className="absolute -bottom-2 -right-2 bg-destructive text-white p-2 rounded-full">
+                <div className="absolute -bottom-3 -right-3 bg-destructive text-white p-3 rounded-full shadow-lg border-4 border-background">
                   <MicOff className="h-5 w-5" />
-                </div>
-              )}
-
-              {userIsSpeaking && !isMicMuted && (
-                <div className="absolute -bottom-2 -right-2 bg-accent-secondary text-white p-2 rounded-full">
-                  <Mic className="h-5 w-5" />
                 </div>
               )}
             </div>
           </div>
         </div>
-
-        {callStatus === CallStatus.CONNECTING && (
-          <div className="absolute inset-0 bg-background/80 flex items-center justify-center flex-col gap-4 z-20">
-            <Loader2 className="h-10 w-10 animate-spin text-accent-primary" />
-            <h3 className="text-xl font-medium">Connecting...</h3>
-          </div>
-        )}
-
-        {callStatus === CallStatus.FINISHED && (
-          <div className="absolute inset-0 bg-background/90 flex items-center justify-center flex-col gap-4 z-20">
-            <h3 className="text-xl font-medium">Call Ended</h3>
-            <p className="text-muted-foreground">Time limit reached</p>
-          </div>
-        )}
       </div>
 
-      <div className="bg-card border-t border-border p-4">
-        <div className="max-w-3xl mx-auto flex items-center justify-between flex-wrap gap-3">
-          <div className="flex items-center gap-2">
-            {callStatus === CallStatus.ACTIVE && (
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-muted-foreground" />
-                <span
-                  className={cn(
-                    "text-sm font-medium",
-                    timeRemaining < 30
-                      ? "text-destructive animate-pulse"
-                      : timeRemaining < 60
-                        ? "text-amber-500"
-                        : "text-muted-foreground",
-                  )}
-                >
-                  {formatTime(timeRemaining)} remaining
-                </span>
-              </div>
+      {/* Floating Control Bar */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 w-full max-w-md px-4 md:px-0">
+        <div className="bg-black/60 backdrop-blur-2xl border border-white/10 p-3 rounded-full flex items-center justify-center gap-4 shadow-2xl mx-auto">
+          
+          <Button
+            onClick={toggleMicMute}
+            variant="ghost"
+            className={cn(
+              "h-14 w-14 rounded-full transition-all duration-300",
+              isMicMuted
+                ? "bg-destructive/20 text-destructive hover:bg-destructive/30 hover:text-destructive"
+                : "bg-white/10 text-white hover:bg-white/20"
             )}
-          </div>
+            disabled={callStatus !== CallStatus.ACTIVE}
+            title={isMicMuted ? "Unmute Microphone" : "Mute Microphone"}
+          >
+            {isMicMuted ? <MicOff className="h-6 w-6" /> : <Mic className="h-6 w-6" />}
+          </Button>
 
-          <div className="flex items-center gap-4">
-            <Button
-              onClick={toggleMicMute}
-              className={cn(
-                "p-3 rounded-full transition-all",
-                isMicMuted
-                  ? "bg-destructive text-primary"
-                  : "bg-secondary hover:bg-secondary/80 text-foreground",
-              )}
-              disabled={callStatus !== CallStatus.ACTIVE}
-            >
-              {isMicMuted ? (
-                <MicOff className="h-6 w-6" />
-              ) : (
-                <Mic className="h-6 w-6" />
-              )}
-            </Button>
+          <Button
+            onClick={stopCall}
+            variant="destructive"
+            className="h-14 w-14 rounded-full hover:bg-destructive/90 transition-all duration-300 shadow-[0_0_20px_rgba(239,68,68,0.4)]"
+            title="End Call"
+            disabled={callStatus !== CallStatus.ACTIVE}
+          >
+            <PhoneOffIcon className="h-6 w-6" />
+          </Button>
 
-            <Button
-              onClick={stopCall}
-              className="p-3 rounded-full bg-destructive text-primary hover:bg-destructive/90 transition-all"
-              aia-label="End Call"
-              disabled={callStatus !== CallStatus.ACTIVE}
-            >
-              <PhoneOffIcon className="h-6 w-6" />
-            </Button>
-          </div>
+          <div className="w-[1px] h-8 bg-white/20 mx-2" />
 
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant={"outline"}>Buy Now</Button>
+              <Button className="h-12 px-6 rounded-full bg-accent-primary hover:bg-accent-primary/90 text-white font-semibold transition-all duration-300 shadow-[0_0_20px_rgba(var(--accent-primary),0.4)]">
+                Buy Now
+              </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md p-10">
+            <DialogContent className="sm:max-w-md p-10 bg-card border-white/10 backdrop-blur-xl">
               <DialogHeader className="flex flex-col items-center">
-                <CheckCircle className="w-16 h-16 text-green-500 mb-4" />
-                <DialogTitle className="text-center text-3xl font-extrabold text-white">
+                <CheckCircle className="w-20 h-20 text-green-500 mb-6 drop-shadow-[0_0_15px_rgba(34,197,94,0.5)]" />
+                <DialogTitle className="text-center text-3xl font-extrabold text-foreground">
                   Payment Successful!
                 </DialogTitle>
-                <DialogDescription className="text-center pt-2 text-base text-white/90">
+                <DialogDescription className="text-center pt-4 text-base text-muted-foreground">
                   Thank you for your purchase. Your payment has been processed
                   successfully. You will receive an email with your receipt
                   shortly.
@@ -457,15 +419,30 @@ const AutoConnectCall = ({
             </DialogContent>
           </Dialog>
 
-          <div className="hidden md:block">
-            {callStatus === CallStatus.ACTIVE && timeRemaining < 30 && (
-              <span className="text-destructive font-medium">
-                Call ending soon
-              </span>
-            )}
-          </div>
         </div>
       </div>
+
+      {/* Connection Overlay */}
+      {callStatus === CallStatus.CONNECTING && (
+        <div className="absolute inset-0 bg-background/80 backdrop-blur-md flex items-center justify-center flex-col gap-6 z-50 transition-all duration-500">
+          <div className="relative">
+             <div className="absolute inset-0 rounded-full border-4 border-accent-primary/30 animate-ping" />
+             <Loader2 className="h-16 w-16 animate-spin text-accent-primary relative z-10" />
+          </div>
+          <h3 className="text-2xl font-medium tracking-wide">Connecting...</h3>
+        </div>
+      )}
+
+      {/* Finished Overlay */}
+      {callStatus === CallStatus.FINISHED && (
+        <div className="absolute inset-0 bg-background/80 backdrop-blur-md flex items-center justify-center flex-col gap-4 z-50 transition-all duration-500">
+          <div className="h-20 w-20 rounded-full bg-secondary/50 flex items-center justify-center mb-4">
+             <CheckCircle className="h-10 w-10 text-muted-foreground" />
+          </div>
+          <h3 className="text-3xl font-bold tracking-tight">Call Ended</h3>
+          <p className="text-muted-foreground text-lg">The session has concluded.</p>
+        </div>
+      )}
     </div>
   );
 };
