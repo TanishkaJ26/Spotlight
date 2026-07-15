@@ -26,6 +26,7 @@ const SubscriptionModal = ({ user }: Props) => {
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleConfirm = async () => {
     try {
@@ -55,6 +56,8 @@ const SubscriptionModal = ({ user }: Props) => {
       }
 
       console.log("Payment successful", paymentIntent);
+      toast.success("Subscription activated successfully!");
+      setOpen(false);
       router.refresh();
     } catch (error) {
       console.log("SUBSCRIPTION-->", error);
@@ -65,7 +68,7 @@ const SubscriptionModal = ({ user }: Props) => {
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <button className="rounded-xl flex gap-2 items-center hover:cursor-pointer p-2 sm:px-4 sm:py-2 border border-border bg-primary/10 backdrop-blur-sm text-sm font-normal text-primary hover:bg-primary/20">
           <PlusIcon />

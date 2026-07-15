@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { SignInButton, SignUpButton, useUser } from "@clerk/nextjs";
 import { motion } from "framer-motion";
 import {
@@ -17,8 +18,60 @@ import {
   Blocks,
   Database,
   Handshake,
+  Mic,
+  MicOff,
+  MonitorUp,
+  Plus,
+  Minus,
 } from "lucide-react";
 import Spotlight from "@/icons/Spotlight";
+
+const faqs = [
+  {
+    question: "Can Spotlight integrate with my existing CRM?",
+    answer: "Yes, Spotlight features native 1-click integrations with Salesforce, HubSpot, and Pipedrive. Every lead, question, and engagement score is synced in real-time."
+  },
+  {
+    question: "How does the AI handle questions it doesn't know the answer to?",
+    answer: "If an attendee asks a highly specific question not found in your knowledge base, the AI gracefully defers and promises an email follow-up from a human rep. It immediately flags this in your CRM."
+  },
+  {
+    question: "Can I clone my own voice?",
+    answer: "Absolutely. You can upload a 30-second audio clip to clone your exact voice, or choose from our library of 50+ ultra-realistic AI voices with regional accents."
+  }
+];
+
+function FAQItem({ question, answer }: { question: string, answer: string }) {
+  const [isOpen, setIsOpen] = useState(false);
+  
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: false }}
+      className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden"
+    >
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full p-6 md:p-8 flex justify-between items-center text-left cursor-pointer hover:bg-white/[0.02] transition-colors"
+      >
+        <h3 className="text-lg font-semibold text-white pr-8">{question}</h3>
+        {isOpen ? <Minus className="w-5 h-5 text-slate-400 shrink-0" /> : <Plus className="w-5 h-5 text-slate-400 shrink-0" />}
+      </button>
+      
+      <motion.div
+        initial={false}
+        animate={{ height: isOpen ? "auto" : 0, opacity: isOpen ? 1 : 0 }}
+        transition={{ duration: 0.3 }}
+        className="overflow-hidden"
+      >
+        <div className="px-6 md:px-8 pb-6 md:pb-8 text-slate-400 text-sm leading-relaxed border-t border-white/5 pt-4">
+          {answer}
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
 
 export default function Home() {
   const { isSignedIn } = useUser();
@@ -86,27 +139,33 @@ export default function Home() {
       <main className="flex-1 relative z-10 grid grid-cols-1 md:grid-cols-12 items-center px-6 pt-8 md:pt-12 pb-12 md:pb-24 max-w-7xl mx-auto w-full gap-8 md:gap-12 min-h-[auto] md:min-h-[80vh]">
         {/* Left Column */}
         <div className="md:col-span-6 lg:col-span-7 flex flex-col items-start text-left z-20 w-full">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-xl font-medium md:font-bold md:text-md lg:text-[30px] text-white mb-2 leading-[1.1]"
+          <motion.div
+            initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
           >
-            Transform your business
-            <br />
-            with an autonomous
-            <br />
-            <span className="pb-2 md:ml-[-20px] md:mr-[-130px] tracking-[-2px] md:tracking-[-5px] text-transparent bg-clip-text bg-gradient-to-r from-[#8B5CF6] to-[#D8B4FE] uppercase text-[60px] md:text-[72px] lg:text-[120px] font-black leading-[1.1] block mt-2 drop-shadow-[0_0_15px_rgba(139,92,246,0.3)]">
-              AI SALES
+            <h1 className="text-xl font-medium md:font-bold md:text-md lg:text-[30px] text-white mb-2 leading-[1.1]">
+              Transform your business
               <br />
-              AGENT
-            </span>
-          </motion.h1>
+              with an autonomous
+              <br />
+              <motion.span 
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                className="pb-2 md:ml-[-20px] md:mr-[-130px] tracking-[-2px] md:tracking-[-5px] text-transparent bg-clip-text bg-gradient-to-r from-[#8B5CF6] to-[#D8B4FE] uppercase text-[60px] md:text-[72px] lg:text-[120px] font-black leading-[1.1] block mt-2 drop-shadow-[0_0_15px_rgba(139,92,246,0.3)]"
+              >
+                AI SALES
+                <br />
+                AGENT
+              </motion.span>
+            </h1>
+          </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 1, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
             className="mt-8 flex flex-row items-center gap-3 sm:gap-4 w-full sm:w-auto"
           >
             <div className="flex-1 sm:flex-none">
@@ -142,13 +201,17 @@ export default function Home() {
 
         {/* Right Column: Dashboard Illustration */}
         <motion.div
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 1, delay: 0.3 }}
+          initial={{ opacity: 0, scale: 0.9, filter: "blur(10px)" }}
+          animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+          transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
           className="md:col-span-6 lg:col-span-5 relative w-full h-[500px] hidden md:block z-20 scale-[1.15] lg:scale-125 origin-center lg:origin-right xl:origin-center mt-10 lg:mt-0"
         >
           {/* Main Dashboard Card */}
-          <div className="absolute top-[10%] right-0 w-full lg:w-[500px] h-[360px] bg-white/8 border border-white/10 rounded-2xl p-5 shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col">
+          <motion.div 
+            animate={{ y: [-15, 15, -15] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-[10%] right-0 w-full lg:w-[500px] h-[360px] bg-white/8 border border-white/10 rounded-2xl p-5 shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col"
+          >
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
@@ -278,53 +341,65 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Live Chat Panel (Overlapping) */}
           <motion.div
-            initial={{ opacity: 0, x: -30, y: 30 }}
-            animate={{ opacity: 1, x: 0, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.8 }}
-            className="absolute top-[50%] left-[-12%] lg:left-[-10%] w-36 lg:w-50 bg-white/8 border border-white/10 rounded-2xl p-3 shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-30"
+            initial={{ opacity: 0, scale: 0.8, x: -30, y: 30 }}
+            animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.8, type: "spring", bounce: 0.4 }}
+            className="absolute top-[50%] left-[-12%] lg:left-[-10%] z-30"
           >
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="text-xs font-semibold">Live Chat</h3>
-              <div className="flex gap-1">
-                <div className="w-0.5 h-0.5 bg-slate-500 rounded-full"></div>
-                <div className="w-0.5 h-0.5 bg-slate-500 rounded-full"></div>
-                <div className="w-0.5 h-0.5 bg-slate-500 rounded-full"></div>
+            <motion.div
+              animate={{ y: [-8, 8, -8] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+              className="w-36 lg:w-50 bg-white/8 border border-white/10 rounded-2xl p-3 shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+            >
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="text-xs font-semibold">Live Chat</h3>
+                <div className="flex gap-1">
+                  <div className="w-0.5 h-0.5 bg-slate-500 rounded-full"></div>
+                  <div className="w-0.5 h-0.5 bg-slate-500 rounded-full"></div>
+                  <div className="w-0.5 h-0.5 bg-slate-500 rounded-full"></div>
+                </div>
               </div>
-            </div>
-            <div className="flex gap-3">
-              <div className="flex-1 bg-black/20 border border-white/5 rounded-xl p-3">
-                <div className="text-xs text-slate-400 mb-1">Active</div>
-                <div className="text-2xl font-bold">5</div>
+              <div className="flex gap-3">
+                <div className="flex-1 bg-black/20 border border-white/5 rounded-xl p-3">
+                  <div className="text-xs text-slate-400 mb-1">Active</div>
+                  <div className="text-2xl font-bold">5</div>
+                </div>
+                <div className="flex-1 bg-black/20 border border-white/5 rounded-xl p-3">
+                  <div className="text-xs text-slate-400 mb-1">Messages</div>
+                  <div className="text-2xl font-bold">89</div>
+                </div>
               </div>
-              <div className="flex-1 bg-black/20 border border-white/5 rounded-xl p-3">
-                <div className="text-xs text-slate-400 mb-1">Messages</div>
-                <div className="text-2xl font-bold">89</div>
-              </div>
-            </div>
+            </motion.div>
           </motion.div>
 
           {/* Lead Alerts Panel (Overlapping) */}
           <motion.div
-            initial={{ opacity: 0, x: -30, y: 30 }}
-            animate={{ opacity: 1, x: 0, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.8 }}
-            className="absolute bottom-[-3%] right-[5%] lg:right-[15%] w-36 lg:w-50 bg-white/8 border border-white/10 rounded-2xl p-3 shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-30"
+            initial={{ opacity: 0, scale: 0.8, x: 30, y: 30 }}
+            animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
+            transition={{ delay: 0.8, duration: 0.8, type: "spring", bounce: 0.4 }}
+            className="absolute bottom-[-3%] right-[5%] lg:right-[15%] z-30"
           >
-            <h3 className="text-xs font-semibold mb-2">Lead Alerts</h3>
-            <div className="flex gap-3">
-              <div className="flex-1 bg-black/20 border border-white/5 rounded-xl p-3">
-                <div className="text-xs text-slate-400 mb-1">New</div>
-                <div className="text-2xl font-bold">15</div>
+            <motion.div
+              animate={{ y: [6, -6, 6] }}
+              transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+              className="w-36 lg:w-50 bg-white/8 border border-white/10 rounded-2xl p-3 shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+            >
+              <h3 className="text-xs font-semibold mb-2">Lead Alerts</h3>
+              <div className="flex gap-3">
+                <div className="flex-1 bg-black/20 border border-white/5 rounded-xl p-3">
+                  <div className="text-xs text-slate-400 mb-1">New</div>
+                  <div className="text-2xl font-bold">15</div>
+                </div>
+                <div className="flex-1 bg-black/20 border border-white/5 rounded-xl p-3">
+                  <div className="text-xs text-slate-400 mb-1">Qualified</div>
+                  <div className="text-2xl font-bold">8</div>
+                </div>
               </div>
-              <div className="flex-1 bg-black/20 border border-white/5 rounded-xl p-3">
-                <div className="text-xs text-slate-400 mb-1">Qualified</div>
-                <div className="text-2xl font-bold">8</div>
-              </div>
-            </div>
+            </motion.div>
           </motion.div>
         </motion.div>
       </main>
@@ -335,7 +410,13 @@ export default function Home() {
         className="relative z-10 py-12 md:py-24 flex flex-col items-center bg-transparent"
       >
         <div className="max-w-7xl mx-auto px-6 w-full">
-          <div className="text-center mb-10 md:mb-16">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, margin: "-100px" }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-10 md:mb-16"
+          >
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 pb-2 bg-gradient-to-r from-white via-[#D8B4FE] to-[#8B5CF6] bg-clip-text text-transparent drop-shadow-sm">
               Supercharge Your Sales Funnel
             </h2>
@@ -344,11 +425,17 @@ export default function Home() {
               providing interactive webinars and personalized customer support
               at scale.
             </p>
-          </div>
+          </motion.div>
 
           <div className="grid md:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto">
             {/* Feature Card 1 */}
-            <div className="p-8 rounded-3xl bg-[#12071f]/60 border border-[#8b5cf6]/20 hover:border-[#8b5cf6]/40 transition-all duration-300 group shadow-lg hover:shadow-[0_0_30px_rgba(139,92,246,0.2)] hover:-translate-y-[5px]">
+            <motion.div 
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, margin: "-100px" }}
+              transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
+              className="p-8 rounded-3xl bg-[#12071f]/60 border border-[#8b5cf6]/20 hover:border-[#8b5cf6]/40 transition-all duration-300 group shadow-lg hover:shadow-[0_0_30px_rgba(139,92,246,0.2)] hover:-translate-y-[5px]"
+            >
               <div className="w-16 h-16 rounded-full bg-[#8B5CF6]/10 shadow-[0_0_15px_rgba(139,92,246,0.3)] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                 <Video className="w-8 h-8 text-[#D8B4FE]" />
               </div>
@@ -359,10 +446,16 @@ export default function Home() {
                 Host thousands of attendees simultaneously with an AI host that
                 presents flawlessly and adapts to audience engagement.
               </p>
-            </div>
+            </motion.div>
 
             {/* Feature Card 2 */}
-            <div className="p-8 rounded-3xl bg-[#12071f]/60 border border-[#8b5cf6]/20 hover:border-[#8b5cf6]/40 transition-all duration-300 group shadow-lg hover:shadow-[0_0_30px_rgba(139,92,246,0.2)] hover:-translate-y-[5px]">
+            <motion.div 
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, margin: "-100px" }}
+              transition={{ duration: 0.7, delay: 0.3, ease: "easeOut" }}
+              className="p-8 rounded-3xl bg-[#12071f]/60 border border-[#8b5cf6]/20 hover:border-[#8b5cf6]/40 transition-all duration-300 group shadow-lg hover:shadow-[0_0_30px_rgba(139,92,246,0.2)] hover:-translate-y-[5px]"
+            >
               <div className="w-16 h-16 rounded-full bg-[#8B5CF6]/10 shadow-[0_0_15px_rgba(139,92,246,0.3)] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                 <MessageSquare className="w-8 h-8 text-[#D8B4FE]" />
               </div>
@@ -373,10 +466,16 @@ export default function Home() {
                 The agent answers questions in real-time, pulling from your
                 knowledge base to provide accurate and persuasive responses.
               </p>
-            </div>
+            </motion.div>
 
             {/* Feature Card 3 */}
-            <div className="p-8 rounded-3xl bg-[#12071f]/60 border border-[#8b5cf6]/20 hover:border-[#8b5cf6]/40 transition-all duration-300 group shadow-lg hover:shadow-[0_0_30px_rgba(139,92,246,0.2)] hover:-translate-y-[5px]">
+            <motion.div 
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, margin: "-100px" }}
+              transition={{ duration: 0.7, delay: 0.5, ease: "easeOut" }}
+              className="p-8 rounded-3xl bg-[#12071f]/60 border border-[#8b5cf6]/20 hover:border-[#8b5cf6]/40 transition-all duration-300 group shadow-lg hover:shadow-[0_0_30px_rgba(139,92,246,0.2)] hover:-translate-y-[5px]"
+            >
               <div className="w-16 h-16 rounded-full bg-[#8B5CF6]/10 shadow-[0_0_15px_rgba(139,92,246,0.3)] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                 <UserPlus className="w-8 h-8 text-[#D8B4FE]" />
               </div>
@@ -387,7 +486,7 @@ export default function Home() {
                 Capture leads automatically during sessions, qualify them
                 instantly, and push them to your CRM for seamless follow-ups.
               </p>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -395,10 +494,10 @@ export default function Home() {
       {/* Workflow & Product Showcase Section */}
       <section className="relative z-10 pb-12 md:pb-24 flex flex-col items-center bg-transparent">
         <div className="max-w-7xl mx-auto px-6 w-full flex flex-col items-center">
-          {/* Pill */}
+          {/* Pill
           <div className="mb-6 md:mb-8 px-5 py-2 rounded-full border border-white/10 bg-[#150724]/50 backdrop-blur-md">
             <span className="text-sm font-medium text-slate-300">Premium</span>
-          </div>
+          </div> */}
 
           {/* Heading */}
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-10 md:mb-16 text-center leading-tight tracking-tight">
@@ -416,12 +515,30 @@ export default function Home() {
           {/* Steps Timeline */}
           <div className="relative w-full max-w-5xl mx-auto">
             {/* The horizontal connecting line */}
-            <div className="hidden md:block absolute top-12 left-[15%] w-[70%] h-1 bg-gradient-to-r from-[#C084FC] via-[#8B5CF6] to-[#3B82F6] rounded-full blur-[3px] opacity-70"></div>
-            <div className="hidden md:block absolute top-12 left-[15%] w-[70%] h-1 bg-gradient-to-r from-[#C084FC] via-[#8B5CF6] to-[#3B82F6] rounded-full"></div>
+            <motion.div 
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={{ once: false, margin: "-100px" }}
+              transition={{ duration: 1.2, delay: 0.2, ease: "easeInOut" }}
+              className="hidden md:block absolute top-12 left-[15%] w-[70%] h-1 bg-gradient-to-r from-[#C084FC] via-[#8B5CF6] to-[#3B82F6] rounded-full blur-[3px] opacity-70 origin-left"
+            ></motion.div>
+            <motion.div 
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={{ once: false, margin: "-100px" }}
+              transition={{ duration: 1.2, delay: 0.2, ease: "easeInOut" }}
+              className="hidden md:block absolute top-12 left-[15%] w-[70%] h-1 bg-gradient-to-r from-[#C084FC] via-[#8B5CF6] to-[#3B82F6] rounded-full origin-left"
+            ></motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-10 relative z-10">
               {/* Step 1 */}
-              <div className="flex flex-col items-center text-center">
+              <motion.div 
+                initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: false, margin: "-100px" }}
+                transition={{ duration: 0.6, delay: 0.4, type: "spring", bounce: 0.4 }}
+                className="flex flex-col items-center text-center"
+              >
                 <div className="w-24 h-24 rounded-full bg-[#150724]/80 backdrop-blur-xl border border-white/10 shadow-[0_0_30px_rgba(192,132,252,0.3)] flex items-center justify-center text-4xl font-bold text-white mb-8 relative">
                   1
                 </div>
@@ -435,10 +552,16 @@ export default function Home() {
                   Upload PDFs, URLs, and CRM data. The AI instantly learns your
                   product inside out.
                 </p>
-              </div>
+              </motion.div>
 
               {/* Step 2 */}
-              <div className="flex flex-col items-center text-center">
+              <motion.div 
+                initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: false, margin: "-100px" }}
+                transition={{ duration: 0.6, delay: 0.6, type: "spring", bounce: 0.4 }}
+                className="flex flex-col items-center text-center"
+              >
                 <div className="w-24 h-24 rounded-full bg-[#150724]/80 backdrop-blur-xl border border-white/10 shadow-[0_0_30px_rgba(139,92,246,0.3)] flex items-center justify-center text-4xl font-bold text-white mb-8 relative">
                   2
                 </div>
@@ -452,10 +575,16 @@ export default function Home() {
                   Set a schedule and go live. The agent hosts, presents slides,
                   and speaks naturally.
                 </p>
-              </div>
+              </motion.div>
 
               {/* Step 3 */}
-              <div className="flex flex-col items-center text-center">
+              <motion.div 
+                initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: false, margin: "-100px" }}
+                transition={{ duration: 0.6, delay: 0.8, type: "spring", bounce: 0.4 }}
+                className="flex flex-col items-center text-center"
+              >
                 <div className="w-24 h-24 rounded-full bg-[#150724]/80 backdrop-blur-xl border border-white/10 shadow-[0_0_30px_rgba(59,130,246,0.3)] flex items-center justify-center text-4xl font-bold text-white mb-8 relative">
                   3
                 </div>
@@ -469,8 +598,188 @@ export default function Home() {
                   The agent answers live Q&A, pushes sign-up links, and
                   automatically follows up.
                 </p>
-              </div>
+              </motion.div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* AI in Action Section */}
+      <section className="relative z-10 py-12 md:py-24 flex flex-col items-center bg-transparent overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 w-full flex flex-col items-center">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, margin: "-100px" }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-10 md:mb-16"
+          >
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 pb-2 bg-gradient-to-r from-white via-[#D8B4FE] to-[#8B5CF6] bg-clip-text text-transparent drop-shadow-sm">
+              See the Agent in Action
+            </h2>
+            <p className="text-slate-400 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+              Experience how our AI handles complex objections and drives conversions in real-time, completely autonomously.
+            </p>
+          </motion.div>
+
+          <div className="w-full max-w-4xl relative">
+            {/* Glowing backdrop */}
+            <div className="absolute inset-0 bg-gradient-to-r from-[#8B5CF6]/30 to-[#3B82F6]/30 blur-[100px] rounded-[3rem] pointer-events-none"></div>
+            
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 40 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: false, margin: "-100px" }}
+              transition={{ duration: 0.8, type: "spring", bounce: 0.3 }}
+              className="relative rounded-3xl bg-[#0f061c]/90 border border-white/10 backdrop-blur-2xl shadow-[0_0_50px_rgba(139,92,246,0.15)] overflow-hidden flex flex-col h-[500px]"
+            >
+              {/* Window Header */}
+              <div className="h-14 border-b border-white/10 flex items-center px-6 justify-between bg-white/5">
+                <div className="flex gap-2">
+                  <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
+                  <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                  <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#7C3AED] to-[#A855F7] flex items-center justify-center shadow-lg shadow-[#8B5CF6]/20 animate-pulse">
+                    <Spotlight className="w-3 h-3 text-white" />
+                  </div>
+                  <span className="text-xs font-medium text-slate-300">Spotlight AI Agent</span>
+                </div>
+                <div className="w-14"></div> {/* Spacer for center alignment */}
+              </div>
+
+              {/* Webinar Content */}
+              <div className="flex-1 p-4 flex flex-col md:flex-row gap-4 overflow-hidden">
+                {/* Main AI Speaker View */}
+                <div className="flex-1 relative rounded-2xl overflow-hidden bg-black/40 border border-white/5 flex items-center justify-center group">
+                   {/* Background gradient/glow for AI */}
+                   <div className="absolute inset-0 bg-gradient-to-br from-[#7C3AED]/10 to-[#A855F7]/5 animate-pulse"></div>
+                   
+                   {/* AI Avatar with subtle pulsing mic */}
+                   <div className="relative z-10 flex flex-col items-center">
+                     <div className="relative">
+                       {/* Subtle outer pulse rings */}
+                       <motion.div 
+                          animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.4, 0.1] }}
+                          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                          className="absolute -inset-4 border border-[#8B5CF6] rounded-full"
+                       />
+                       <motion.div 
+                          animate={{ scale: [1, 1.4, 1], opacity: [0.05, 0.15, 0.05] }}
+                          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.2 }}
+                          className="absolute -inset-8 border border-[#8B5CF6] rounded-full"
+                       />
+                       {/* Avatar Circle */}
+                       <div className="w-24 h-24 rounded-full bg-transparent border-2 border-[#8B5CF6] flex items-center justify-center relative z-20">
+                          <Spotlight className="w-10 h-10 text-white" />
+                       </div>
+                       
+                       {/* Small Mic Indicator Badge */}
+                       <div className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-[#8B5CF6] border-4 border-[#0f061c] flex items-center justify-center z-30 shadow-lg">
+                          <Mic className="w-3 h-3 text-white" />
+                       </div>
+                     </div>
+                   </div>
+
+                   {/* Live Captions */}
+                   <div className="absolute bottom-6 left-0 right-0 px-8 hidden md:flex justify-center z-30">
+                     <div className="bg-black/60 backdrop-blur-md px-6 py-3 rounded-2xl border border-white/10 text-center max-w-lg relative overflow-hidden flex items-center justify-center min-h-[60px] w-full">
+                        <motion.p 
+                          animate={{ opacity: [1, 1, 0, 0, 0, 0, 0, 0] }}
+                          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+                          className="text-white text-sm font-medium tracking-wide absolute px-6"
+                        >
+                           "Hello everyone! Welcome to today's webinar on scaling your sales."
+                        </motion.p>
+                        <motion.p 
+                          animate={{ opacity: [0, 0, 1, 1, 0, 0, 0, 0] }}
+                          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+                          className="text-white text-sm font-medium tracking-wide absolute px-6"
+                        >
+                           "I see a question from John about Salesforce integration..."
+                        </motion.p>
+                        <motion.p 
+                          animate={{ opacity: [0, 0, 0, 0, 1, 1, 0, 0] }}
+                          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+                          className="text-white text-sm font-medium tracking-wide absolute px-6"
+                        >
+                           "Yes, we natively sync all webinar engagement data back to your CRM instantly."
+                        </motion.p>
+                        <motion.p 
+                          animate={{ opacity: [0, 0, 0, 0, 0, 0, 1, 1] }}
+                          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+                          className="text-white text-sm font-medium tracking-wide absolute px-6 text-[#D8B4FE]"
+                        >
+                           *Spotlight AI has sent a link in the chat*
+                        </motion.p>
+                     </div>
+                   </div>
+                   
+                   {/* Name tag */}
+                   <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 flex items-center gap-2">
+                     <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                     <span className="text-xs font-semibold text-white">Spotlight AI</span>
+                     <span className="text-[10px] text-slate-400 bg-white/10 px-1.5 rounded">Host</span>
+                   </div>
+                </div>
+
+                {/* User View (Right) */}
+                <div className="flex-1 relative rounded-2xl overflow-hidden bg-black/40 border border-white/5 flex items-center justify-center group">
+                   <div className="w-24 h-24 rounded-full bg-pink-500/20 text-pink-400 flex items-center justify-center text-3xl font-bold border-4 border-[#0f061c] relative z-20 shadow-2xl">
+                     A
+                   </div>
+                   
+                   {/* Name tag */}
+                   <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 flex items-center gap-2">
+                     <span className="text-xs font-semibold text-white">Aaditi</span>
+                   </div>
+
+                   {/* Mic Off Icon */}
+                   <div className="absolute top-2 right-2 bg-black/60 p-2 rounded-full backdrop-blur-md border border-white/10">
+                     <MicOff className="w-4 h-4 text-red-400" />
+                   </div>
+                </div>
+
+                {/* Floating Reactions */}
+                <motion.div 
+                  animate={{ y: [0, -100], opacity: [0, 1, 0] }} 
+                  transition={{ duration: 2, repeat: Infinity, delay: 0 }} 
+                  className="absolute right-8 bottom-32 text-xl hidden md:block"
+                >❤️</motion.div>
+                <motion.div 
+                  animate={{ y: [0, -120], opacity: [0, 1, 0], x: [0, -10, 5] }} 
+                  transition={{ duration: 2.5, repeat: Infinity, delay: 0.8 }} 
+                  className="absolute right-12 bottom-32 text-xl hidden md:block"
+                >👏</motion.div>
+                <motion.div 
+                  animate={{ y: [0, -150], opacity: [0, 1, 0], x: [0, 15, -5] }} 
+                  transition={{ duration: 2.2, repeat: Infinity, delay: 1.5 }} 
+                  className="absolute right-4 bottom-32 text-xl hidden md:block"
+                >🚀</motion.div>
+              </div>
+
+              {/* Control Bar */}
+              <div className="h-16 border-t border-white/10 bg-[#07020F]/50 backdrop-blur-md flex items-center justify-center gap-4 px-6 shrink-0">
+                 <div className="flex gap-3">
+                   <div className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center cursor-pointer transition-colors text-white">
+                     <Mic className="w-4 h-4" />
+                   </div>
+                   <div className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center cursor-pointer transition-colors text-white">
+                     <Video className="w-4 h-4" />
+                   </div>
+                   <div className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center cursor-pointer transition-colors text-white hidden sm:flex">
+                     <MonitorUp className="w-4 h-4" />
+                   </div>
+                   <div className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center cursor-pointer transition-colors text-white">
+                     <MessageSquare className="w-4 h-4" />
+                   </div>
+                   <div className="w-16 h-10 rounded-full bg-red-500/90 hover:bg-red-500 flex items-center justify-center cursor-pointer transition-colors text-white font-medium text-xs shadow-lg shadow-red-500/20">
+                     Leave
+                   </div>
+                 </div>
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -492,7 +801,13 @@ export default function Home() {
 
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Starter Plan */}
-            <div className="p-10 rounded-[2rem] bg-[#12071f]/60 border border-white/10 hover:border-white/20 transition-colors flex flex-col h-full shadow-xl">
+            <motion.div 
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: false, margin: "-100px" }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="p-10 rounded-[2rem] bg-[#12071f]/60 border border-white/10 hover:border-white/20 transition-colors flex flex-col h-full shadow-xl"
+            >
               <h3 className="text-xl font-semibold text-white mb-2">Starter</h3>
               <div className="text-5xl font-bold text-white mb-2 flex items-baseline">
                 $0
@@ -530,10 +845,16 @@ export default function Home() {
                   </button>
                 </SignInButton>
               </div>
-            </div>
+            </motion.div>
 
             {/* Pro Plan */}
-            <div className="p-10 rounded-[2rem] bg-[#1a0b2e]/80 border-2 border-[#8B5CF6] relative flex flex-col h-full shadow-[0_0_40px_rgba(139,92,246,0.2)] transform md:-translate-y-2">
+            <motion.div 
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: false, margin: "-100px" }}
+              transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+              className="p-10 rounded-[2rem] bg-[#1a0b2e]/80 border-2 border-[#8B5CF6] relative flex flex-col h-full shadow-[0_0_40px_rgba(139,92,246,0.2)] transform md:-translate-y-2"
+            >
               <div className="absolute top-0 right-10 -translate-y-1/2 px-4 py-1.5 bg-[#8B5CF6] rounded-full text-[10px] font-bold text-white tracking-wider shadow-lg uppercase">
                 MOST POPULAR
               </div>
@@ -580,7 +901,30 @@ export default function Home() {
                   </button>
                 </SignInButton>
               </div>
-            </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="relative z-10 py-12 md:py-24 flex flex-col items-center bg-transparent my-10">
+        <div className="max-w-4xl mx-auto px-6 w-full">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, margin: "-100px" }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
+              Frequently asked questions
+            </h2>
+          </motion.div>
+
+          <div className="flex flex-col gap-6">
+            {faqs.map((faq, i) => (
+              <FAQItem key={i} question={faq.question} answer={faq.answer} />
+            ))}
           </div>
         </div>
       </section>
