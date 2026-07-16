@@ -62,7 +62,7 @@ export const createWebinar = async (formData: WebinarFormState) => {
     if (webinarDateTime < now) {
       return {
         status: 400,
-        message: "Webinar date and time cannot be in the past",
+        message: `Webinar date and time cannot be in the past. You selected: ${webinarDateTime.toLocaleString()}, but now is: ${now.toLocaleString()}`,
       };
     }
 
