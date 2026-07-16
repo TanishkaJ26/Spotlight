@@ -78,6 +78,9 @@ const SubscriptionModal = ({ user }: Props) => {
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Spotlight Subscription</DialogTitle>
+          <p className="text-sm text-muted-foreground mt-2">
+            Already subscribed? Please refresh the page to update your status.
+          </p>
         </DialogHeader>
         <CardElement
           options={{
