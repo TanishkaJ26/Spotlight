@@ -6,8 +6,9 @@ import "./globals.css";
 import { Toaster } from "sonner";
 
 const manrope = Manrope({
-  subsets : ['latin'],
-})
+  subsets: ["latin"],
+  variable: "--font-manrope",
+});
 
 export const metadata: Metadata = {
   title: "Spotlight",
@@ -22,7 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${manrope.className} antialiased`}
+        className={`${manrope.className} ${manrope.variable} antialiased`}
         suppressHydrationWarning
       >
         <ClerkProvider>

@@ -136,9 +136,9 @@ export default function Home() {
       </nav>
 
       {/* Main Hero Section */}
-      <main className="flex-1 relative z-10 grid grid-cols-1 md:grid-cols-12 items-center px-6 pt-8 md:pt-12 pb-12 md:pb-24 max-w-7xl mx-auto w-full gap-8 md:gap-12 min-h-[auto] md:min-h-[80vh]">
+      <main className="flex-1 relative z-10 grid grid-cols-1 md:grid-cols-12 items-center px-8 md:px-12 lg:px-6 pt-8 md:pt-12 pb-12 md:pb-24 max-w-7xl mx-auto w-full gap-8 md:gap-12 min-h-[auto] md:min-h-[80vh]">
         {/* Left Column */}
-        <div className="md:col-span-6 lg:col-span-7 flex flex-col items-start text-left z-20 w-full">
+        <div className="md:col-span-6 lg:col-span-6 flex flex-col items-start text-left z-20 w-full">
           <motion.div
             initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
@@ -153,7 +153,7 @@ export default function Home() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                className="pb-2 md:ml-[-20px] md:mr-[-130px] tracking-[-2px] md:tracking-[-5px] text-transparent bg-clip-text bg-gradient-to-r from-[#8B5CF6] to-[#D8B4FE] uppercase text-[60px] md:text-[72px] lg:text-[120px] font-black leading-[1.1] block mt-2 drop-shadow-[0_0_15px_rgba(139,92,246,0.3)]"
+                className="pb-2 lg:ml-[-20px] md:mr-[-130px] tracking-[-2px] md:tracking-[-5px] text-transparent bg-clip-text bg-gradient-to-r from-[#8B5CF6] to-[#D8B4FE] uppercase text-[60px] md:text-[72px] lg:text-[120px] font-black leading-[1.1] block mt-2 drop-shadow-[0_0_15px_rgba(139,92,246,0.3)]"
               >
                 AI SALES
                 <br />
@@ -170,14 +170,14 @@ export default function Home() {
           >
             <div className="flex-1 sm:flex-none">
               <SignInButton mode="modal">
-                <button className="w-full sm:w-auto px-2 sm:px-8 py-3 sm:py-4 rounded-3xl sm:rounded-4xl bg-gradient-to-r from-[#7C3AED] to-[#A855F7] text-white font-medium flex items-center justify-center gap-1 sm:gap-2 hover:opacity-90 transition-opacity shadow-[0_0_20px_rgba(139,92,246,0.5)] cursor-pointer text-xs sm:text-lg whitespace-nowrap">
-                  Get Started Free <ChevronRight className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
+                <button className="w-full sm:w-auto px-4 sm:px-6 lg:px-8 py-3 lg:py-4 rounded-full bg-gradient-to-r from-[#7C3AED] to-[#A855F7] text-white font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-[0_0_20px_rgba(139,92,246,0.5)] cursor-pointer text-sm lg:text-lg whitespace-nowrap">
+                  Get Started Free <ChevronRight className="w-4 h-4 lg:w-5 lg:h-5" />
                 </button>
               </SignInButton>
             </div>
             <Link
               href="#features"
-              className="flex-1 sm:flex-none w-full sm:w-auto px-2 sm:px-8 py-3 sm:py-4 rounded-3xl sm:rounded-4xl bg-transparent text-slate-200 font-medium border border-white/30 hover:border-white hover:bg-white/10 transition-colors flex items-center justify-center text-xs sm:text-lg whitespace-nowrap"
+              className="flex-1 sm:flex-none w-full sm:w-auto px-4 sm:px-6 lg:px-8 py-3 lg:py-4 rounded-full bg-transparent text-slate-200 font-medium border border-white/30 hover:border-white hover:bg-white/10 transition-colors flex items-center justify-center text-sm lg:text-lg whitespace-nowrap"
             >
               Explore Features
             </Link>
@@ -204,13 +204,11 @@ export default function Home() {
           initial={{ opacity: 0, scale: 0.9, filter: "blur(10px)" }}
           animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
           transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          className="md:col-span-6 lg:col-span-5 relative w-full h-[500px] hidden md:block z-20 scale-[1.15] lg:scale-125 origin-center lg:origin-right xl:origin-center mt-10 lg:mt-0"
+          className="md:col-span-6 lg:col-span-6 relative w-full hidden md:flex flex-col gap-6 z-20 mt-10 lg:mt-0 lg:scale-[1.05]"
         >
           {/* Main Dashboard Card */}
           <motion.div 
-            animate={{ y: [-15, 15, -15] }}
-            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-[10%] right-0 w-full lg:w-[500px] h-[360px] bg-white/8 border border-white/10 rounded-2xl p-5 shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col"
+            className="w-full bg-white/8 border border-white/10 rounded-2xl p-6 shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col min-h-[400px]"
           >
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
@@ -254,7 +252,7 @@ export default function Home() {
               {/* Main Content Area */}
               <div className="flex-1 flex flex-col gap-4">
                 {/* Stat block 1 (Top) */}
-                <div className="w-full h-[150px] bg-black/20 border border-white/10 rounded-xl p-4 flex flex-col relative overflow-hidden -mt-4">
+                <div className="w-full flex-1 bg-black/20 border border-white/10 rounded-xl p-4 flex flex-col relative overflow-hidden">
                   <h4 className="text-xs text-slate-400 mb-4 font-medium">
                     Webinar Stats
                   </h4>
@@ -268,20 +266,52 @@ export default function Home() {
                   </div>
                   {/* Fake Chart Area */}
                   <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-[#8B5CF6]/20 to-transparent flex items-end opacity-80">
-                    <svg
+                    <motion.svg
                       viewBox="0 0 100 40"
                       preserveAspectRatio="none"
                       className="w-full h-full text-[#8B5CF6]/40 fill-current"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 1.5, delay: 0.8 }}
                     >
-                      <path d="M0,40 C15,20 30,30 45,15 C60,0 75,25 100,10 L100,40 L0,40 Z" />
-                    </svg>
+                      <motion.path 
+                        animate={{ 
+                          d: [
+                            "M0,40 C15,20 30,30 45,15 C60,0 75,25 100,10 L100,40 L0,40 Z",
+                            "M0,40 C15,30 30,10 45,5 C60,0 75,30 100,25 L100,40 L0,40 Z",
+                            "M0,40 C15,10 30,25 45,30 C60,35 75,15 100,5 L100,40 L0,40 Z",
+                            "M0,40 C15,5 30,35 45,25 C60,15 75,35 100,20 L100,40 L0,40 Z",
+                            "M0,40 C15,35 30,20 45,20 C60,20 75,10 100,15 L100,40 L0,40 Z",
+                            "M0,40 C15,20 30,30 45,15 C60,0 75,25 100,10 L100,40 L0,40 Z"
+                          ]
+                        }}
+                        transition={{ duration: 30, repeat: Infinity, ease: "easeInOut" }}
+                      />
+                    </motion.svg>
                     <svg
                       viewBox="0 0 100 40"
                       preserveAspectRatio="none"
                       className="w-full h-full text-[#C084FC] absolute bottom-0 left-0 fill-none stroke-current"
                       strokeWidth="1.5"
                     >
-                      <path d="M0,40 C15,20 30,30 45,15 C60,0 75,25 100,10" />
+                      <motion.path 
+                        initial={{ pathLength: 0 }}
+                        animate={{ 
+                          pathLength: 1,
+                          d: [
+                            "M0,40 C15,20 30,30 45,15 C60,0 75,25 100,10",
+                            "M0,40 C15,30 30,10 45,5 C60,0 75,30 100,25",
+                            "M0,40 C15,10 30,25 45,30 C60,35 75,15 100,5",
+                            "M0,40 C15,5 30,35 45,25 C60,15 75,35 100,20",
+                            "M0,40 C15,35 30,20 45,20 C60,20 75,10 100,15",
+                            "M0,40 C15,20 30,30 45,15 C60,0 75,25 100,10"
+                          ]
+                        }}
+                        transition={{ 
+                          pathLength: { duration: 2, ease: "easeOut", delay: 0.5 },
+                          d: { duration: 30, repeat: Infinity, ease: "easeInOut" }
+                        }}
+                      />
                     </svg>
                   </div>
                 </div>
@@ -343,64 +373,49 @@ export default function Home() {
             </div>
           </motion.div>
 
-          {/* Live Chat Panel (Overlapping) */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8, x: -30, y: 30 }}
-            animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.8, type: "spring", bounce: 0.4 }}
-            className="absolute top-[50%] left-[-12%] lg:left-[-10%] z-30"
-          >
+          {/* Sub-panels (Floating everywhere, scaling down on smaller screens) */}
+          <div className="absolute inset-0 pointer-events-none z-30">
+            {/* Live Chat Panel */}
             <motion.div
-              animate={{ y: [-8, 8, -8] }}
-              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-              className="w-36 lg:w-50 bg-white/8 border border-white/10 rounded-2xl p-3 shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+              className="pointer-events-auto absolute top-[50%] left-[-2%] md:left-[-8%] xl:left-[-10%] w-36 md:w-44 lg:w-48 xl:w-56 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-3 lg:p-4 shadow-[0_30px_60px_rgba(0,0,0,0.6)] scale-90 md:scale-100 origin-right"
             >
-              <div className="flex justify-between items-center mb-2">
-                <h3 className="text-xs font-semibold">Live Chat</h3>
+              <div className="flex justify-between items-center mb-2 lg:mb-3">
+                <h3 className="text-xs lg:text-sm font-semibold text-white">Live Chat</h3>
                 <div className="flex gap-1">
-                  <div className="w-0.5 h-0.5 bg-slate-500 rounded-full"></div>
-                  <div className="w-0.5 h-0.5 bg-slate-500 rounded-full"></div>
-                  <div className="w-0.5 h-0.5 bg-slate-500 rounded-full"></div>
+                  <div className="w-0.5 h-0.5 bg-slate-400 rounded-full"></div>
+                  <div className="w-0.5 h-0.5 bg-slate-400 rounded-full"></div>
+                  <div className="w-0.5 h-0.5 bg-slate-400 rounded-full"></div>
                 </div>
               </div>
-              <div className="flex gap-3">
-                <div className="flex-1 bg-black/20 border border-white/5 rounded-xl p-3">
-                  <div className="text-xs text-slate-400 mb-1">Active</div>
-                  <div className="text-2xl font-bold">5</div>
+              <div className="flex gap-2 lg:gap-3">
+                <div className="flex-1 bg-black/40 border border-white/10 rounded-xl p-2 lg:p-3 shadow-inner">
+                  <div className="text-[10px] lg:text-xs text-slate-300 mb-1">Active</div>
+                  <div className="text-lg lg:text-2xl font-bold text-white">5</div>
                 </div>
-                <div className="flex-1 bg-black/20 border border-white/5 rounded-xl p-3">
-                  <div className="text-xs text-slate-400 mb-1">Messages</div>
-                  <div className="text-2xl font-bold">89</div>
+                <div className="flex-1 bg-black/40 border border-white/10 rounded-xl p-2 lg:p-3 shadow-inner">
+                  <div className="text-[10px] lg:text-xs text-slate-300 mb-1">Messages</div>
+                  <div className="text-lg lg:text-2xl font-bold text-white">89</div>
                 </div>
               </div>
             </motion.div>
-          </motion.div>
 
-          {/* Lead Alerts Panel (Overlapping) */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8, x: 30, y: 30 }}
-            animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.8, type: "spring", bounce: 0.4 }}
-            className="absolute bottom-[-3%] right-[5%] lg:right-[15%] z-30"
-          >
+            {/* Lead Alerts Panel */}
             <motion.div
-              animate={{ y: [6, -6, 6] }}
-              transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-              className="w-36 lg:w-50 bg-white/8 border border-white/10 rounded-2xl p-3 shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+              className="pointer-events-auto absolute bottom-[-5%] right-[2%] md:right-[5%] xl:right-[15%] w-36 md:w-44 lg:w-48 xl:w-56 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-3 lg:p-4 shadow-[0_30px_60px_rgba(0,0,0,0.6)] scale-90 md:scale-100 origin-left"
             >
-              <h3 className="text-xs font-semibold mb-2">Lead Alerts</h3>
-              <div className="flex gap-3">
-                <div className="flex-1 bg-black/20 border border-white/5 rounded-xl p-3">
-                  <div className="text-xs text-slate-400 mb-1">New</div>
-                  <div className="text-2xl font-bold">15</div>
+              <h3 className="text-xs lg:text-sm font-semibold mb-2 lg:mb-3 text-white">Lead Alerts</h3>
+              <div className="flex gap-2 lg:gap-3">
+                <div className="flex-1 bg-black/40 border border-white/10 rounded-xl p-2 lg:p-3 shadow-inner">
+                  <div className="text-[10px] lg:text-xs text-slate-300 mb-1">New</div>
+                  <div className="text-lg lg:text-2xl font-bold text-white">15</div>
                 </div>
-                <div className="flex-1 bg-black/20 border border-white/5 rounded-xl p-3">
-                  <div className="text-xs text-slate-400 mb-1">Qualified</div>
-                  <div className="text-2xl font-bold">8</div>
+                <div className="flex-1 bg-black/40 border border-white/10 rounded-xl p-2 lg:p-3 shadow-inner">
+                  <div className="text-[10px] lg:text-xs text-slate-300 mb-1">Qualified</div>
+                  <div className="text-lg lg:text-2xl font-bold text-white">8</div>
                 </div>
               </div>
             </motion.div>
-          </motion.div>
+          </div>
         </motion.div>
       </main>
 
