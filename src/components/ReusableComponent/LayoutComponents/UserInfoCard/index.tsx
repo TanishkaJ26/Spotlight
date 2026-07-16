@@ -1,9 +1,10 @@
 import { cn } from "@/lib/utils";
 import { Attendee } from "@prisma/client";
+import { Badge } from "@/components/ui/badge";
 import React from "react";
 
 type Props = {
-  customer: Attendee;
+  customer: Attendee & { attendedAt?: Date };
   tags: string[];
   className?: string;
 };
@@ -20,7 +21,18 @@ const UserInfoCard = ({ customer, tags, className }: Props) => {
         <div className="space-y-1">
           <h3 className="font-semibold text-sm text-foreground tracking-tight">{customer.name}</h3>
           <p className="text-xs text-muted-foreground truncate w-[220px]" title={customer.email}>{customer.email}</p>
+          {customer.phone && (
+            <p className="text-xs text-muted-foreground truncate w-[220px]" title={customer.phone}>{customer.phone}</p>
+          )}
         </div>
+        {customer.callStatus && (
+          <Badge 
+            variant={customer.callStatus === 'COMPLETED' ? 'default' : customer.callStatus === 'InProgress' ? 'secondary' : 'outline'} 
+            className="text-[10px] whitespace-nowrap"
+          >
+            {customer.callStatus === 'InProgress' ? 'In Progress' : customer.callStatus}
+          </Badge>
+        )}
       </div>
       
       {tags && tags.length > 0 && (
@@ -39,8 +51,8 @@ const UserInfoCard = ({ customer, tags, className }: Props) => {
       <div className="flex items-center justify-between mt-1 pt-3 border-t border-white/5">
         <p className="text-[10px] text-muted-foreground font-medium flex items-center gap-1.5">
           <span className="w-1.5 h-1.5 rounded-full bg-accent-primary/60"></span>
-          Updated:{" "}
-          {new Date(customer.updatedAt).toLocaleDateString("en-US", {
+          Joined:{" "}
+          {new Date(customer.attendedAt || customer.updatedAt).toLocaleDateString("en-US", {
             year: "numeric",
             month: "short",
             day: "numeric",

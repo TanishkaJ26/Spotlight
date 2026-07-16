@@ -6,7 +6,7 @@ import { CallStatusEnum } from "@prisma/client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { vapi } from "@/lib/vapi/vapiClient";
-import { changeCallStatus } from "@/actions/attendance";
+import { changeCallStatus, changeAttendanceType } from "@/actions/attendance";
 import {
   Bot,
   CheckCircle,
@@ -209,6 +209,7 @@ const AutoConnectCall = ({
       setCallStatus(CallStatus.CONNECTING);
       await vapi.start(assistantId);
       const res = await changeCallStatus(userId, CallStatusEnum.InProgress);
+      await changeAttendanceType(userId, webinar.id, "ADDED_TO_CART");
       if (!res.success) {
         throw new Error("Failed to update call status");
       }
@@ -280,11 +281,11 @@ const AutoConnectCall = ({
       {/* Subtle Background Glow */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-accent-primary/10 via-background to-background pointer-events-none" />
 
-      <div className="flex-1 flex flex-col p-4 pb-28 md:p-8 z-10 w-full h-full">
-        <div className="w-full h-full max-w-6xl mx-auto flex flex-col md:grid md:grid-cols-2 gap-4 md:gap-8">
+      <div className="flex-1 flex flex-col p-4 pb-28 md:p-8 z-10 w-full h-full justify-center">
+        <div className="w-full max-w-6xl mx-auto flex flex-col lg:grid lg:grid-cols-2 gap-4 lg:gap-8">
           
           {/* AI Card */}
-          <div className="relative flex-1 md:flex-none md:aspect-video bg-card/30 backdrop-blur-xl rounded-3xl overflow-hidden border border-white/5 shadow-2xl flex items-center justify-center group transition-all duration-500 hover:border-white/10">
+          <div className="relative flex-1 lg:flex-none lg:aspect-video bg-card/30 backdrop-blur-xl rounded-3xl overflow-hidden border border-white/5 shadow-2xl flex items-center justify-center group transition-all duration-500 hover:border-white/10">
             {/* Top Label */}
             <div className="absolute top-4 left-4 bg-black/40 backdrop-blur-md text-white/90 px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-medium flex items-center gap-2 border border-white/5 shadow-lg">
               <Mic
@@ -318,7 +319,7 @@ const AutoConnectCall = ({
           </div>
 
           {/* User Card */}
-          <div className="relative flex-1 md:flex-none md:aspect-video bg-card/30 backdrop-blur-xl rounded-3xl overflow-hidden border border-white/5 shadow-2xl flex items-center justify-center group transition-all duration-500 hover:border-white/10">
+          <div className="relative flex-1 lg:flex-none lg:aspect-video bg-card/30 backdrop-blur-xl rounded-3xl overflow-hidden border border-white/5 shadow-2xl flex items-center justify-center group transition-all duration-500 hover:border-white/10">
             {/* Top Label */}
             <div className="absolute top-4 left-4 bg-black/40 backdrop-blur-md text-white/90 px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-medium flex items-center gap-2 border border-white/5 shadow-lg">
               {isMicMuted ? (

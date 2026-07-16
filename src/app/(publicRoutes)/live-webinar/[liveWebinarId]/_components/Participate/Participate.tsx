@@ -1,5 +1,6 @@
 "use client";
 import { getStreamIoToken } from "@/actions/streamIo";
+import { changeAttendanceType } from "@/actions/attendance";
 import { Button } from "@/components/ui/button";
 import { WebinarWithPresenter } from "@/lib/type";
 import { useAttendeeStore } from "@/store/useAttendeeStore";
@@ -85,6 +86,11 @@ const Participate = ({ apiKey, webinar, callId }: Props) => {
         setCall(streamCall);
         setConnectionStatus("connected");
         clientInitialized.current = true;
+        
+        // Mark as attended in the database
+        if (attendee?.id) {
+          changeAttendanceType(attendee.id, callId, "ATTENDED").catch(console.error);
+        }
       } catch (error: any) {
         console.error("Error initializing client or joining call:", error);
         if (!isMounted) return;
