@@ -21,9 +21,11 @@ function combinedDateTime(
     hours = 0;
   }
 
-  const result = new Date(date);
-  result.setHours(hours, minutes, 0, 0);
-  return result;
+  // The 'date' object represents midnight in the user's local timezone.
+  // Instead of using setHours (which uses the server's timezone),
+  // we add the hours and minutes in milliseconds to ensure it is timezone-agnostic.
+  const timeInMilliseconds = (hours * 60 * 60 * 1000) + (minutes * 60 * 1000);
+  return new Date(date.getTime() + timeInMilliseconds);
 }
 
 export const createWebinar = async (formData: WebinarFormState) => {
@@ -62,7 +64,7 @@ export const createWebinar = async (formData: WebinarFormState) => {
     if (webinarDateTime < now) {
       return {
         status: 400,
-        message: `Webinar date and time cannot be in the past. You selected: ${webinarDateTime.toLocaleString()}, but now is: ${now.toLocaleString()}`,
+        message: "Webinar date and time cannot be in the past",
       };
     }
 
