@@ -18,11 +18,11 @@ const UserInfoCard = ({ customer, tags, className }: Props) => {
       )}
     >
       <div className="flex justify-between items-start gap-2">
-        <div className="space-y-1">
-          <h3 className="font-semibold text-sm text-foreground tracking-tight">{customer.name}</h3>
-          <p className="text-xs text-muted-foreground truncate w-[220px]" title={customer.email}>{customer.email}</p>
+        <div className="space-y-1 flex-1 min-w-0 mr-2">
+          <h3 className="font-semibold text-sm text-foreground tracking-tight truncate">{customer.name}</h3>
+          <p className="text-xs text-muted-foreground truncate" title={customer.email}>{customer.email}</p>
           {customer.phone && (
-            <p className="text-xs text-muted-foreground truncate w-[220px]" title={customer.phone}>{customer.phone}</p>
+            <p className="text-xs text-muted-foreground truncate" title={customer.phone}>{customer.phone}</p>
           )}
         </div>
         {customer.callStatus && (
