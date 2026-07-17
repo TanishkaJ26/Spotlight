@@ -106,7 +106,7 @@ NEXT_PUBLIC_VAPI_PUBLIC_KEY=
 
 | Landing Page | Dashboard | Create Webinar Form | Live Webinar | AI Agent |
 |--------------|-----------|---------------------|--------------|----------|
-| ![Landing](/pubic/screenshots/landing.png) | ![Dashboard](/public/screenshots/dashboard.png) | ![Create Webinar Form](/public/screenshots/creat-form.png) | ![Live Webinar](/public/screenshots/live-webinar.png) | ![AI Agent](/public/screenshots/ai-agent.png) |
+| ![Landing](/pubic/screenshots/Landing.png) | ![Dashboard](/public/screenshots/Dashboard.png) | ![Create Webinar Form](/public/screenshots/create-webinar.png) | ![Live Webinar](/public/screenshots/live-stream.png) | ![AI Agent](/public/screenshots/ai-agent.png) |
 
 ## 🏗️ Project Structure
 
