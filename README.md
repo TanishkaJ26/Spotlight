@@ -70,11 +70,9 @@ SaaS application.
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/ai-webinar-saas.git
-
+git clone https://github.com/TanishkaJ26/Spotlight.git
 # Navigate to project directory
-cd ai-webinar-saas
-
+cd Spotlight
 # Install dependencies
 npm install
 
