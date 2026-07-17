@@ -1,4 +1,4 @@
-<img width="1786" height="786" alt="Ai Agent" src="https://github.com/user-attachments/assets/86f411d0-06b4-46bd-994e-e1ef6cba5963" /># 🎙️ AI Webinar SaaS Platform
+# 🎙️ AI Webinar SaaS Platform
 
 ![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat&logo=next.js)
 ![TypeScript](https://img.shields.io/badge/TypeScript-blue?style=flat&logo=typescript)
@@ -106,7 +106,7 @@ NEXT_PUBLIC_VAPI_PUBLIC_KEY=
 
 | Landing Page | Dashboard | Create Webinar Form | Live Webinar | AI Agent |
 |--------------|-----------|---------------------|--------------|----------|
-| ![Landing](<img width="1891" height="861" alt="Landing" src="https://github.com/user-attachments/assets/7f335807-095f-40cc-92bd-64d1d7aeedd7" />) | ![Dashboard](<img width="1897" height="856" alt="Dashboard" src="https://github.com/user-attachments/assets/59ea2125-53f0-4037-8d65-f2d07b952e8f" />) | ![Create Webinar Form](<img width="1907" height="861" alt="Create Webinar" src="https://github.com/user-attachments/assets/3d46981b-ba1e-45d5-be48-e58ee98d9695" />) | ![Live Webinar](<img width="1898" height="867" alt="Live Stream" src="https://github.com/user-attachments/assets/05d5146c-b6d0-4287-81b5-01d47b7b274f" />) | ![AI Agent](<img width="1786" height="786" alt="Ai Agent" src="https://github.com/user-attachments/assets/86f411d0-06b4-46bd-994e-e1ef6cba5963" />) |
+| ![Landing]<img width="1891" height="861" alt="Landing" src="https://github.com/user-attachments/assets/7f335807-095f-40cc-92bd-64d1d7aeedd7" /> | ![Dashboard]<img width="1897" height="856" alt="Dashboard" src="https://github.com/user-attachments/assets/59ea2125-53f0-4037-8d65-f2d07b952e8f" /> | ![Create Webinar Form]<img width="1907" height="861" alt="Create Webinar" src="https://github.com/user-attachments/assets/3d46981b-ba1e-45d5-be48-e58ee98d9695" /> | ![Live Webinar]<img width="1898" height="867" alt="Live Stream" src="https://github.com/user-attachments/assets/05d5146c-b6d0-4287-81b5-01d47b7b274f" /> | ![AI Agent]<img width="1786" height="786" alt="Ai Agent" src="https://github.com/user-attachments/assets/86f411d0-06b4-46bd-994e-e1ef6cba5963" /> |
 
 ## 🏗️ Project Structure
 
