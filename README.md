@@ -132,7 +132,7 @@ NEXT_PUBLIC_VAPI_PUBLIC_KEY=
 
 Tanishka Jangir
 - GitHub: [@TanishkaJ26](https://github.com/TanishkaJ26)
-- LinkedIn: [linkedin.com/in/tanishka-jangir](www.linkedin.com/in/tanishka-jangir-7567bb291)
+- LinkedIn: [linkedin.com/in/tanishka-jangir](https://www.linkedin.com/in/tanishka-jangir-7567bb291/)
 
 ## 📄 License
 
