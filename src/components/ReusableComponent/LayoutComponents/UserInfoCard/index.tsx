@@ -13,26 +13,27 @@ const UserInfoCard = ({ customer, tags, className }: Props) => {
   return (
     <div
       className={cn(
-        "w-full flex flex-col p-4 gap-3 rounded-xl border border-white/10 backdrop-blur-md bg-secondary/30 transition-all duration-300",
+        "relative w-full flex flex-col p-4 gap-3 rounded-xl border border-white/10 backdrop-blur-md bg-secondary/30 transition-all duration-300 overflow-hidden",
         className,
       )}
     >
-      <div className="flex justify-between items-start gap-2">
-        <div className="space-y-1 flex-1 min-w-0 mr-2">
+      {customer.callStatus && (
+        <Badge 
+          variant={customer.callStatus === 'COMPLETED' ? 'default' : customer.callStatus === 'InProgress' ? 'secondary' : 'outline'} 
+          className="absolute top-3 right-3 text-[10px] whitespace-nowrap z-10"
+        >
+          {customer.callStatus === 'InProgress' ? 'In Progress' : customer.callStatus}
+        </Badge>
+      )}
+      
+      <div className="flex justify-between items-start gap-2 pr-16">
+        <div className="space-y-1 flex-1 min-w-0">
           <h3 className="font-semibold text-sm text-foreground tracking-tight truncate">{customer.name}</h3>
           <p className="text-xs text-muted-foreground truncate" title={customer.email}>{customer.email}</p>
           {customer.phone && (
             <p className="text-xs text-muted-foreground truncate" title={customer.phone}>{customer.phone}</p>
           )}
         </div>
-        {customer.callStatus && (
-          <Badge 
-            variant={customer.callStatus === 'COMPLETED' ? 'default' : customer.callStatus === 'InProgress' ? 'secondary' : 'outline'} 
-            className="text-[10px] whitespace-nowrap"
-          >
-            {customer.callStatus === 'InProgress' ? 'In Progress' : customer.callStatus}
-          </Badge>
-        )}
       </div>
       
       {tags && tags.length > 0 && (
